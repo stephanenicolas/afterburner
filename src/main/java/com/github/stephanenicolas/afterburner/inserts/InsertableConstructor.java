@@ -1,4 +1,6 @@
-package com.github.stephanenicolas.afterburner;
+package com.github.stephanenicolas.afterburner.inserts;
+
+import com.github.stephanenicolas.afterburner.exception.AfterBurnerImpossibleException;
 
 import javassist.CtClass;
 

@@ -1,4 +1,4 @@
-package com.github.stephanenicolas.afterburner;
+package com.github.stephanenicolas.afterburner.exception;
 
 @SuppressWarnings("serial")
 public class AfterBurnerImpossibleException extends Exception {

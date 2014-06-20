@@ -14,6 +14,10 @@ import javassist.expr.MethodCall;
 
 import org.slf4j.Logger;
 
+import com.github.stephanenicolas.afterburner.exception.AfterBurnerImpossibleException;
+import com.github.stephanenicolas.afterburner.inserts.InsertableConstructor;
+import com.github.stephanenicolas.afterburner.inserts.InsertableMethod;
+
 public class AfterBurner {
     private Logger logger;
 

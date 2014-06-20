@@ -1,4 +1,4 @@
-package com.github.stephanenicolas.afterburner;
+package com.github.stephanenicolas.afterburner.inserts;
 
 import javassist.CtClass;
 
