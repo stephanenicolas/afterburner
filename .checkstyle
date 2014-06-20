@@ -5,6 +5,7 @@
     <additional-data name="protect-config-file" value="false"/>
   </local-check-config>
   <fileset name="all" enabled="true" check-config-name="afterburner_rules" local="true">
-    <file-match-pattern match-pattern="." include-pattern="true"/>
+    <file-match-pattern match-pattern=".*.java" include-pattern="true"/>
+    <file-match-pattern match-pattern="TestCounter" include-pattern="false"/>
   </fileset>
 </fileset-config>
