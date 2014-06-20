@@ -20,13 +20,6 @@ import org.slf4j.Logger;
 import com.github.stephanenicolas.afterburner.exception.AfterBurnerImpossibleException;
 import com.github.stephanenicolas.afterburner.inserts.InsertableMethod;
 
-/**
- * Can be used to mimic a class via post processing. On the target class, add
- * this annotation.
- * 
- * @author SNI
- *
- */
 public class AfterBurnerTest {
 
     private AfterBurner afterBurner;
