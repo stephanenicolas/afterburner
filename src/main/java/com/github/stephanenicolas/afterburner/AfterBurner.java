@@ -52,7 +52,7 @@ public class AfterBurner {
                 constructor
                 .insertBeforeBody(insertableConstructor
                         .getConstructorBody(constructor
-                                .getParameterTypes()[0]));
+                                .getParameterTypes()));
             }
         } else {
             getLogger().warn("No suitable constructor was found in class {}. Add a constructor with a single argument : Activity, Fragment or View. Don't use non static inner classes.",

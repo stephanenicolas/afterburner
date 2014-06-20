@@ -10,7 +10,7 @@ public abstract class InsertableConstructor extends Insertable {
         super(classToInsertInto);
     }
 
-    public abstract String getConstructorBody(CtClass paramClass) throws AfterBurnerImpossibleException;
+    public abstract String getConstructorBody(CtClass[] paramClasses) throws AfterBurnerImpossibleException;
     
     public abstract boolean acceptParameters(CtClass[] paramClasses) throws AfterBurnerImpossibleException;
 

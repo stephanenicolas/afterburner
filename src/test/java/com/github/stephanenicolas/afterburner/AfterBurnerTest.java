@@ -10,6 +10,7 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.CtMethod;
+import javassist.CtNewConstructor;
 import javassist.CtNewMethod;
 
 import org.easymock.EasyMock;
@@ -18,6 +19,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 
 import com.github.stephanenicolas.afterburner.exception.AfterBurnerImpossibleException;
+import com.github.stephanenicolas.afterburner.inserts.InsertableConstructor;
 import com.github.stephanenicolas.afterburner.inserts.InsertableMethod;
 
 public class AfterBurnerTest {
@@ -66,6 +68,23 @@ public class AfterBurnerTest {
         targetClass = target.toClass();
         targetInstance = targetClass.newInstance();
         assertHasFooMethodWithReturnValue(target, false);
+        assertHasFooFieldWithValue(target, 2);
+    }
+    
+    @Test
+    public void testInsertConstructor() throws Exception {
+        // GIVEN
+        target.addConstructor(CtNewConstructor.make("public Target() {}", target));
+        target.addField(new CtField(CtClass.intType, "foo", target));
+        InsertableConstructor insertableConstructor = new SimpleInsertableConstructor(target,
+                "foo = 2;");
+
+        // WHEN
+        afterBurner.insertConstructor(insertableConstructor);
+
+        // THEN
+        targetClass = target.toClass();
+        targetInstance = targetClass.newInstance();
         assertHasFooFieldWithValue(target, 2);
     }
 
@@ -133,6 +152,25 @@ public class AfterBurnerTest {
         @Override
         public String getInsertionAfterMethod() {
             return insertionAfterMethod;
+        }
+    }
+
+    public class SimpleInsertableConstructor extends InsertableConstructor {
+        private String body;
+
+        public SimpleInsertableConstructor(CtClass classToInsertInto, String body) {
+            super(classToInsertInto);
+            this.body = body;
+        }
+
+        @Override
+        public String getConstructorBody(CtClass[] paramClasses) throws AfterBurnerImpossibleException {
+            return body;
+        }
+
+        @Override
+        public boolean acceptParameters(CtClass[] paramClasses) throws AfterBurnerImpossibleException {
+            return true;
         }
     }
 
