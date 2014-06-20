@@ -76,11 +76,15 @@ public class AfterBurnerTest {
         assertHasFooFieldWithValue(target, 2);
     }
 
+    //TODO send issue to javassist for getDeclaredMethods. It should return a list
+    //TODO test insert constructor
+    //TODO test builder
+    
     private void assertHasFooMethodWithReturnValue(CtClass clazz, boolean returnValue) throws Exception {
         CtMethod fooMethod = clazz.getDeclaredMethod("foo");
         assertNotNull(fooMethod);
         // we also need to check if code has been copied
-        
+
         Method realFooMethod = targetInstance.getClass().getMethod("foo");
         assertEquals(returnValue, realFooMethod.invoke(targetInstance));
     }
