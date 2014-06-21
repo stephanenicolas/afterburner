@@ -3,24 +3,29 @@ package com.github.stephanenicolas.afterburner.inserts;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import javassist.CannotCompileException;
+import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.CtNewMethod;
+import javassist.NotFoundException;
 
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.github.stephanenicolas.afterburner.AfterBurner;
+import com.github.stephanenicolas.afterburner.TestCounter;
 import com.github.stephanenicolas.afterburner.exception.AfterBurnerImpossibleException;
 
 public class InsertableMethodBuilderTest {
 
     private InsertableMethod.Builder builder;
+    private SignatureExtractor signatureExtractorMock;
     private AfterBurner afterBurnerMock;
     
     @Before
     public void setUp() {
         afterBurnerMock = EasyMock.createNiceMock(AfterBurner.class);
-        builder = new InsertableMethod.Builder(afterBurnerMock);
+        builder = new InsertableMethod.Builder(afterBurnerMock, null);
     }
     
     @Test
@@ -30,13 +35,15 @@ public class InsertableMethodBuilderTest {
         afterBurnerMock.addOrInsertMethod((InsertableMethod) EasyMock.anyObject());
         EasyMock.replay(afterBurnerMock);
 
-        builder = new InsertableMethod.Builder(afterBurnerMock);
+        builder = new InsertableMethod.Builder(afterBurnerMock, null);
 
         CtClass classToInsertInto = CtClass.intType;
         String targetMethod = "";
         String insertionAfterMethod = "";
         String fullMethod = "";
         String body = "";
+
+        //WHEN
         builder
             .insertIntoClass(classToInsertInto)
             .inMethodIfExists(targetMethod)
@@ -44,7 +51,39 @@ public class InsertableMethodBuilderTest {
             .withBody(body)
             .elseCreateMethodIfNotExists(fullMethod);
 
+        builder.doIt();
+
+        //THEN
+        EasyMock.verify(afterBurnerMock);
+    }
+
+    @Test
+    public void testDoIt_calls_afterburner_with_override() throws CannotCompileException, AfterBurnerImpossibleException, NotFoundException {
+        //GIVEN
+        afterBurnerMock = EasyMock.createMock(AfterBurner.class);
+        afterBurnerMock.addOrInsertMethod((InsertableMethod) EasyMock.anyObject());
+        EasyMock.replay(afterBurnerMock);
+        signatureExtractorMock = EasyMock.createNiceMock(SignatureExtractor.class);
+        CtClass targetClassAncestor = ClassPool.getDefault().makeClass(
+                "TargetAncestor" + TestCounter.testCounter++);
+        targetClassAncestor.addMethod(CtNewMethod.make("public void foo() { }", targetClassAncestor));
+
+        CtClass targetClass = ClassPool.getDefault().makeClass(
+                "Target" + TestCounter.testCounter++);
+        targetClass.setSuperclass(targetClassAncestor);
+        targetClass.addMethod(CtNewMethod.make("public void foo() { super.foo(); }", targetClass));
+
         //WHEN
+        builder = new InsertableMethod.Builder(afterBurnerMock, signatureExtractorMock);
+
+        CtClass classToInsertInto = targetClass;
+        String targetMethod = "foo";
+        String body = "";
+        builder
+            .insertIntoClass(classToInsertInto)
+            .afterOverrideMethod(targetMethod)
+            .withBody(body);
+
         builder.doIt();
 
         //THEN

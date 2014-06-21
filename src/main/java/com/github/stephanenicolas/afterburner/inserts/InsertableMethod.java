@@ -5,6 +5,8 @@ import com.github.stephanenicolas.afterburner.exception.AfterBurnerImpossibleExc
 
 import javassist.CannotCompileException;
 import javassist.CtClass;
+import javassist.CtMethod;
+import javassist.NotFoundException;
 
 public abstract class InsertableMethod extends Insertable {
 
@@ -28,6 +30,7 @@ public abstract class InsertableMethod extends Insertable {
 
     public static class Builder {
 
+        private static final String BODY_TAG = "==BODY==";
         private String targetMethod;
         private CtClass classToInsertInto;
         protected String fullMethod;
@@ -35,9 +38,15 @@ public abstract class InsertableMethod extends Insertable {
         protected String insertionBeforeMethod;
         protected String insertionAfterMethod;
         private AfterBurner afterBurner;
+        private SignatureExtractor signatureExtractor;
 
         public Builder(AfterBurner afterBurner) {
+            this(afterBurner, null);
+        }
+
+        public Builder(AfterBurner afterBurner, SignatureExtractor signatureExtractor) {
             this.afterBurner = afterBurner;
+            this.signatureExtractor = signatureExtractor;
         }
 
         public Builder insertIntoClass(CtClass classToInsertInto) {
@@ -69,13 +78,30 @@ public abstract class InsertableMethod extends Insertable {
             this.fullMethod = fullMethod;
             return this;
         }
+        
+        public Builder afterOverrideMethod(String targetMethod) throws NotFoundException {
+            this.targetMethod = targetMethod;
+            this.insertionAfterMethod = targetMethod;
+            CtMethod overridenMethod = classToInsertInto.getDeclaredMethod(targetMethod);
+            fullMethod = signatureExtractor.extractSignature(overridenMethod) + " { \n"
+                    + BODY_TAG + "}\n";
+
+            return this;
+        }
 
         public void doIt() throws CannotCompileException,
                 AfterBurnerImpossibleException {
 
             checkFields();
+            doInsertBodyInFullMethod();
             InsertableMethod method = createInsertableMethod();
             afterBurner.addOrInsertMethod(method);
+        }
+
+        private void doInsertBodyInFullMethod() {
+            if (fullMethod != null) {
+                fullMethod = fullMethod.replace(BODY_TAG, body);
+            }
         }
 
         protected void checkFields() throws AfterBurnerImpossibleException {
