@@ -72,6 +72,13 @@ public abstract class InsertableMethod extends Insertable {
 
         public void doIt() throws CannotCompileException,
                 AfterBurnerImpossibleException {
+
+            checkFields();
+            InsertableMethod method = createInsertableMethod();
+            afterBurner.addOrInsertMethod(method);
+        }
+
+        protected void checkFields() throws AfterBurnerImpossibleException {
             boolean hasInsertionMethod = insertionBeforeMethod != null
                     || insertionAfterMethod != null;
             if (classToInsertInto == null || targetMethod == null
@@ -80,7 +87,9 @@ public abstract class InsertableMethod extends Insertable {
                 throw new AfterBurnerImpossibleException(
                         "Builder was not used as intended. A field is null.");
             }
+        }
 
+        protected InsertableMethod createInsertableMethod() {
             InsertableMethod method = new InsertableMethod(classToInsertInto) {
                 @Override
                 public String getFullMethod() {
@@ -107,7 +116,7 @@ public abstract class InsertableMethod extends Insertable {
                     return insertionAfterMethod;
                 }
             };
-            afterBurner.addOrInsertMethod(method);
+            return method;
         }
     }
 }
