@@ -88,8 +88,6 @@ public class AfterBurnerTest {
         assertHasFooFieldWithValue(target, 2);
     }
 
-    //TODO send issue to javassist for getDeclaredMethods. It should return a list
-    
     private void assertHasFooMethodWithReturnValue(CtClass clazz, boolean returnValue) throws Exception {
         CtMethod fooMethod = clazz.getDeclaredMethod("foo");
         assertNotNull(fooMethod);
