@@ -31,7 +31,7 @@ We can change the method `foo()`, for instance to change the value of the member
 ```java
 InsertableMethod.Builder builder = new InsertableMethod.Builder( new AfterBurner() );
 
-CtClass classToInsertInto = ClassPool.getDefaultPool().get(A.class);
+CtClass classToInsertInto = ClassPool.getDefaultPool().get(A.class.getName());
 String targetMethod = "foo";
 String insertionAfterMethod = "bar";
 String fullMethod = "public void foo() { this.foo = 2; }";
@@ -68,7 +68,7 @@ The `InsertableMethod.Builder` is used to provide a "fluent API/DSL" to AfterBur
 
 #### Classic way
 ```java
-afterBurner.addOrInsertMethod(new InsertableMethod(ClassPool.getDefaultPool().getA()) {
+afterBurner.addOrInsertMethod(new InsertableMethod(ClassPool.getDefaultPool().get("A")) {
     @Override
     public String getFullMethod() throws AfterBurnerImpossibleException {
         return "public void foo() { foo = 2; }";
@@ -102,9 +102,8 @@ public class ActivityA {
 if you want to log "HelloWorld" in its `onCreate` method, just do (with a builder) : 
 
 ```java
-CtClass classToInsertInto = ClassPool.getDefaultPool().get(ActivityA.class);
 builder
-  .insertIntoClass(classToInsertInto)
+  .insertIntoClass(ActivityA.class)
   .afterOverrideMethod("onCreate")
   .withBody("System.out.println(\"Hello World\");")
   .doIt();
