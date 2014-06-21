@@ -17,7 +17,6 @@ Examples
 #### Adding a new method
 
 Let say we a class `A` : 
-
 ```java
 public class A {
   private int foo;
@@ -68,7 +67,6 @@ The `fullMethod` attribute of the builder is used if class `A` doesn't have a me
 The `InsertableMethod.Builder` is used to provide a "fluent API/DSL" to AfterBurner. But it is also possible to use AfterBurner in a more verbose way. See below
 
 #### Fluent API / DSL
-
 ```java
 afterBurner.addOrInsertMethod(new InsertableMethod(CtClass.getDefaultPool().getA()) {
     @Override
