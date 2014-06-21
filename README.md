@@ -30,22 +30,20 @@ public class A {
 
 We can change the method `foo()`, for instance to change the value of the member `foo`, right after a call to `bar()` :
 ```java
-        InsertableMethod.Builder builder = new InsertableMethod.Builder( new AfterBurner() );
+InsertableMethod.Builder builder = new InsertableMethod.Builder( new AfterBurner() );
 
-        CtClass classToInsertInto = CtClass.getDefaultPool().get(A.class);
-        String targetMethod = "foo";
-        String insertionAfterMethod = "bar";
-        String fullMethod = "public void foo() { this.foo = 2; }";
-        String body = "this.foo = 2;";
-        builder
-            .insertIntoClass(classToInsertInto)
-            .inMethodIfExists(targetMethod)
-            .afterACallTo(insertionAfterMethod)
-            .withBody(body)
-            .elseCreateMethodIfNotExists(fullMethod);
-
-        //WHEN
-        builder.doIt();
+CtClass classToInsertInto = CtClass.getDefaultPool().get(A.class);
+String targetMethod = "foo";
+String insertionAfterMethod = "bar";
+String fullMethod = "public void foo() { this.foo = 2; }";
+String body = "this.foo = 2;";
+builder
+  .insertIntoClass(classToInsertInto)
+  .inMethodIfExists(targetMethod)
+  .afterACallTo(insertionAfterMethod)
+  .withBody(body)
+  .elseCreateMethodIfNotExists(fullMethod)
+  .doIt();
 ```
 
 This will result in modifying the class `A` as if it had been written : 
@@ -72,26 +70,25 @@ The `InsertableMethod.Builder` is used to provide a "fluent API/DSL" to AfterBur
 #### Fluent API / DSL
 
 ```java
-        afterBurner.addOrInsertMethod(new InsertableMethod(CtClass.getDefaultPool().getA()) {
+afterBurner.addOrInsertMethod(new InsertableMethod(CtClass.getDefaultPool().getA()) {
+    @Override
+    public String getFullMethod() throws AfterBurnerImpossibleException {
+        return "public void foo() { foo = 2; }";
+    }
 
-            @Override
-            public String getFullMethod() throws AfterBurnerImpossibleException {
-                return "public void foo() { foo = 2; }";
-            }
+    @Override
+    public String getBody() throws AfterBurnerImpossibleException {
+        return "foo = 2;";
+    }
 
-            @Override
-            public String getBody() throws AfterBurnerImpossibleException {
-                return "foo = 2;";
-            }
-
-            @Override
-            public String getTargetMethodName() throws AfterBurnerImpossibleException {
-                return "foo";
-            }
+    @Override
+    public String getTargetMethodName() throws AfterBurnerImpossibleException {
+        return "foo";
+    }
             
-            @Override
-            public String getInsertionAfterMethod() {
-                return "bar";
-            }
-        });
+    @Override
+    public String getInsertionAfterMethod() {
+        return "bar";
+    }
+});
 ```
