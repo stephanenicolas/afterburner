@@ -108,12 +108,12 @@ public class AfterBurner {
     }
 
     /**
-     * Returns the method name methodName in classToTransform. Null if not found.
+     * Returns the method named {@code methodName} in {@code classToTransform}. Null if not found.
      * Due to limitations of javassist, in case of multiple overloads, one of them only is returned.
      * (https://github.com/jboss-javassist/javassist/issues/9)
      * @param classToTransform the class that should contain a method methodName.
      * @param methodName the name of the method to retrieve.
-     * @return the method name methodName in classToTransform. Null if not found.
+     * @return the method named {@code methodName} in {@code classToTransform}. Null if not found.
      */
     public CtMethod extractExistingMethod(final CtClass classToTransform,
             String methodName) {
