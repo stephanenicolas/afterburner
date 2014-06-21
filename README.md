@@ -31,7 +31,7 @@ We can change the method `foo()`, for instance to change the value of the member
 ```java
 InsertableMethod.Builder builder = new InsertableMethod.Builder( new AfterBurner() );
 
-CtClass classToInsertInto = CtClass.getDefaultPool().get(A.class);
+CtClass classToInsertInto = ClassPool.getDefaultPool().get(A.class);
 String targetMethod = "foo";
 String insertionAfterMethod = "bar";
 String fullMethod = "public void foo() { this.foo = 2; }";
@@ -68,7 +68,7 @@ The `InsertableMethod.Builder` is used to provide a "fluent API/DSL" to AfterBur
 
 #### Classic way
 ```java
-afterBurner.addOrInsertMethod(new InsertableMethod(CtClass.getDefaultPool().getA()) {
+afterBurner.addOrInsertMethod(new InsertableMethod(ClassPool.getDefaultPool().getA()) {
     @Override
     public String getFullMethod() throws AfterBurnerImpossibleException {
         return "public void foo() { foo = 2; }";
@@ -90,3 +90,26 @@ afterBurner.addOrInsertMethod(new InsertableMethod(CtClass.getDefaultPool().getA
     }
 });
 ```
+
+#### An android example
+
+Let's say you got an activity class `ActivityA` :  
+```java
+public class ActivityA {
+}
+```
+
+if you want to log "HelloWorld" in its `onCreate` method, just do (with a builder) : 
+
+```java
+builder
+  .insertIntoClass(classToInsertInto)
+  .afterOverrideMethod(targetMethod)
+  .withBody("System.out.println("Hello World");")
+  .doIt();
+```
+
+If you want to combine an annotation with byte code insertion of your favorite library, to avoid boiler plate, use AfterBurner.
+
+
+
