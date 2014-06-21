@@ -102,6 +102,7 @@ public class ActivityA {
 if you want to log "HelloWorld" in its `onCreate` method, just do (with a builder) : 
 
 ```java
+CtClass classToInsertInto = ClassPool.getDefaultPool().get(ActivityA.class);
 builder
   .insertIntoClass(classToInsertInto)
   .afterOverrideMethod(targetMethod)
