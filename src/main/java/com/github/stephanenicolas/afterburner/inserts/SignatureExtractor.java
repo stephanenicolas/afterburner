@@ -14,6 +14,12 @@ public class SignatureExtractor {
                 + extractParametersAndTypes(overridenMethod) + ")"
                 + extractThrowClause(overridenMethod);
     }
+    
+    public String invokeSuper(CtMethod method) throws NotFoundException {
+        return "super."
+                + method.getName() + "("
+                + extractParameters(method) + ")";
+    }
 
     private String extractThrowClause(CtMethod overridenMethod) throws NotFoundException {
         int indexException = 0;
@@ -40,8 +46,19 @@ public class SignatureExtractor {
             builder.append("p" + indexParam);
             if (indexParam < overridenMethod.getParameterTypes().length - 1) {
                 builder.append(", ");
-            }   
+            }
             indexParam++;
+        }
+        return builder.toString();
+    }
+
+    private String extractParameters(CtMethod overridenMethod) throws NotFoundException {
+        StringBuilder builder = new StringBuilder();
+        for (int indexParam = 0; indexParam < overridenMethod.getParameterTypes().length; indexParam++) {
+            builder.append("p" + indexParam);
+            if (indexParam < overridenMethod.getParameterTypes().length - 1) {
+                builder.append(", ");
+            }
         }
         return builder.toString();
     }

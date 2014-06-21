@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
 
@@ -63,7 +64,11 @@ public class InsertableMethodBuilderTest {
         afterBurnerMock = EasyMock.createMock(AfterBurner.class);
         afterBurnerMock.addOrInsertMethod((InsertableMethod) EasyMock.anyObject());
         EasyMock.replay(afterBurnerMock);
-        signatureExtractorMock = EasyMock.createNiceMock(SignatureExtractor.class);
+        signatureExtractorMock = EasyMock.createMock(SignatureExtractor.class);
+        EasyMock.expect(signatureExtractorMock.invokeSuper((CtMethod) EasyMock.anyObject())).andReturn("super.foo()");
+        EasyMock.expect(signatureExtractorMock.extractSignature((CtMethod) EasyMock.anyObject())).andReturn("public void foo()");
+        EasyMock.replay(signatureExtractorMock);
+
         CtClass targetClassAncestor = ClassPool.getDefault().makeClass(
                 "TargetAncestor" + TestCounter.testCounter++);
         targetClassAncestor.addMethod(CtNewMethod.make("public void foo() { }", targetClassAncestor));
@@ -91,7 +96,7 @@ public class InsertableMethodBuilderTest {
     }
 
     @Test
-    public void testCheckAllFields_should_succeed_with_insert_after_method_defined() {
+    public void testCheckAllFields_should_succeed_with_insert_after_method_defined() throws AfterBurnerImpossibleException {
         //GIVEN
         CtClass classToInsertInto = CtClass.intType;
         String targetMethod = "";
@@ -113,7 +118,7 @@ public class InsertableMethodBuilderTest {
     }
 
     @Test
-    public void testCheckAllFields_should_succeed_with_insert_before_method_defined() {
+    public void testCheckAllFields_should_succeed_with_insert_before_method_defined() throws AfterBurnerImpossibleException {
         //GIVEN
         CtClass classToInsertInto = CtClass.intType;
         String targetMethod = "";

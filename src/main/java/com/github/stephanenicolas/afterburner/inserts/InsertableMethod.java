@@ -90,6 +90,7 @@ public abstract class InsertableMethod extends Insertable {
             this.insertionAfterMethod = targetMethod;
             CtMethod overridenMethod = classToInsertInto.getDeclaredMethod(targetMethod);
             fullMethod = signatureExtractor.extractSignature(overridenMethod) + " { \n"
+                    + signatureExtractor.invokeSuper(overridenMethod) + "\n"
                     + BODY_TAG + "}\n";
 
             return this;
@@ -98,8 +99,6 @@ public abstract class InsertableMethod extends Insertable {
         public void doIt() throws CannotCompileException,
                 AfterBurnerImpossibleException {
 
-            checkFields();
-            doInsertBodyInFullMethod();
             InsertableMethod method = createInsertableMethod();
             afterBurner.addOrInsertMethod(method);
         }
@@ -121,7 +120,10 @@ public abstract class InsertableMethod extends Insertable {
             }
         }
 
-        protected InsertableMethod createInsertableMethod() {
+        public InsertableMethod createInsertableMethod() throws AfterBurnerImpossibleException {
+            checkFields();
+            doInsertBodyInFullMethod();
+
             InsertableMethod method = new InsertableMethod(classToInsertInto) {
                 @Override
                 public String getFullMethod() {

@@ -17,12 +17,15 @@ import org.slf4j.Logger;
 import com.github.stephanenicolas.afterburner.exception.AfterBurnerImpossibleException;
 import com.github.stephanenicolas.afterburner.inserts.InsertableConstructor;
 import com.github.stephanenicolas.afterburner.inserts.InsertableMethod;
+import com.github.stephanenicolas.afterburner.inserts.SignatureExtractor;
 
 public class AfterBurner {
     private Logger logger;
+    private SignatureExtractor signatureExtractor;
 
     public AfterBurner(Logger logger) {
         this.logger = logger;
+        signatureExtractor = new SignatureExtractor();
     }
 
     public void addOrInsertMethod(InsertableMethod insertableMethod) throws CannotCompileException, AfterBurnerImpossibleException {
@@ -41,6 +44,12 @@ public class AfterBurner {
                     insertableMethod.getFullMethod(), classToTransform));
         }
     }
+    
+    public void afterOverrideMethod(CtClass targetClass, String targetMethodName, String body) throws CannotCompileException, AfterBurnerImpossibleException, NotFoundException {
+        InsertableMethod insertableMethod = new InsertableMethod.Builder(this, signatureExtractor).insertIntoClass(targetClass).afterOverrideMethod(targetMethodName).withBody(body).createInsertableMethod();
+        addOrInsertMethod(insertableMethod);
+    }
+
 
     public void insertConstructor(InsertableConstructor insertableConstructor) throws CannotCompileException, AfterBurnerImpossibleException,
     NotFoundException {
