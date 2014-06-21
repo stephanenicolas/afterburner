@@ -105,7 +105,7 @@ if you want to log "HelloWorld" in its `onCreate` method, just do (with a builde
 CtClass classToInsertInto = ClassPool.getDefaultPool().get(ActivityA.class);
 builder
   .insertIntoClass(classToInsertInto)
-  .afterOverrideMethod(targetMethod)
+  .afterOverrideMethod("onCreate")
   .withBody("System.out.println("Hello World");")
   .doIt();
 ```
