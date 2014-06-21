@@ -62,11 +62,11 @@ public class A {
 
 The `fullMethod` attribute of the builder is used if class `A` doesn't have a method `foo()`, otherwise, the `body` attribute of the builder is compiled and injected into the method `foo()` right after a call to method `bar()`.
 
-#### Fluent API / DSL
+#### Fluent API / DSL way
 
 The `InsertableMethod.Builder` is used to provide a "fluent API/DSL" to AfterBurner. But it is also possible to use AfterBurner in a more verbose way. See below
 
-#### Fluent API / DSL
+#### Classic way
 ```java
 afterBurner.addOrInsertMethod(new InsertableMethod(CtClass.getDefaultPool().getA()) {
     @Override
