@@ -51,6 +51,7 @@
 		<maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
 		<maven-checkstyle-plugin.version>2.11</maven-checkstyle-plugin.version>
 		<findbugs-maven-plugin.version>2.5.3</findbugs-maven-plugin.version>
+		<eclipse-lifecycle-plugin.version>1.0.0</eclipse-lifecycle-plugin.version>
 
 		<!--LIBRARIES -->
 		<android-map.version>7_r1</android-map.version>
@@ -188,15 +189,28 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
+				<!-- Eclipse config -->
+				<!-- http://stackoverflow.com/questions/13040788/how-to-elimate-the-maven-enforcer-plugin-goal-enforce-is-ignored-by-m2e-wa -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
+					<version>${eclipse-lifecycle-plugin.version}</version>
 					<configuration>
 						<lifecycleMappingMetadata>
 							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-enforcer-plugin</artifactId>
+										<versionRange>[1.0.0,)</versionRange>
+										<goals>
+											<goal>enforce</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>
