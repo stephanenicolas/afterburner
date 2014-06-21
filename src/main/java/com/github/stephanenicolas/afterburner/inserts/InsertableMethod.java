@@ -4,6 +4,7 @@ import com.github.stephanenicolas.afterburner.AfterBurner;
 import com.github.stephanenicolas.afterburner.exception.AfterBurnerImpossibleException;
 
 import javassist.CannotCompileException;
+import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
@@ -47,6 +48,11 @@ public abstract class InsertableMethod extends Insertable {
         public Builder(AfterBurner afterBurner, SignatureExtractor signatureExtractor) {
             this.afterBurner = afterBurner;
             this.signatureExtractor = signatureExtractor;
+        }
+
+        public Builder insertIntoClass(Class<?> clazzToInsertInto) throws NotFoundException {
+            this.classToInsertInto = ClassPool.getDefault().get(clazzToInsertInto.getName());
+            return this;
         }
 
         public Builder insertIntoClass(CtClass classToInsertInto) {
