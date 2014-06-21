@@ -1,4 +1,4 @@
-package com.github.stephanenicolas.afterburner.inserts;
+package com.github.stephanenicolas.afterburner;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -13,20 +13,20 @@ import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.github.stephanenicolas.afterburner.AfterBurner;
-import com.github.stephanenicolas.afterburner.TestCounter;
 import com.github.stephanenicolas.afterburner.exception.AfterBurnerImpossibleException;
+import com.github.stephanenicolas.afterburner.inserts.CtMethodJavaWriter;
+import com.github.stephanenicolas.afterburner.inserts.InsertableMethod;
 
 public class InsertableMethodBuilderTest {
 
-    private InsertableMethod.Builder builder;
+    private InsertableMethodBuilder builder;
     private CtMethodJavaWriter signatureExtractorMock;
     private AfterBurner afterBurnerMock;
     
     @Before
     public void setUp() {
         afterBurnerMock = EasyMock.createNiceMock(AfterBurner.class);
-        builder = new InsertableMethod.Builder(afterBurnerMock, null);
+        builder = new InsertableMethodBuilder(afterBurnerMock, null);
     }
     
     @Test
@@ -36,7 +36,7 @@ public class InsertableMethodBuilderTest {
         afterBurnerMock.addOrInsertMethod((InsertableMethod) EasyMock.anyObject());
         EasyMock.replay(afterBurnerMock);
 
-        builder = new InsertableMethod.Builder(afterBurnerMock, null);
+        builder = new InsertableMethodBuilder(afterBurnerMock, null);
 
         CtClass classToInsertInto = CtClass.intType;
         String targetMethod = "";
@@ -79,7 +79,7 @@ public class InsertableMethodBuilderTest {
         targetClass.addMethod(CtNewMethod.make("public void foo() { super.foo(); }", targetClass));
 
         //WHEN
-        builder = new InsertableMethod.Builder(afterBurnerMock, signatureExtractorMock);
+        builder = new InsertableMethodBuilder(afterBurnerMock, signatureExtractorMock);
 
         CtClass classToInsertInto = targetClass;
         String targetMethod = "foo";

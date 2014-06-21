@@ -57,7 +57,20 @@ public class AfterBurner {
     }
     
     /**
-     * Add/Inserts java instructions into a given override method of a given class.
+     * Add/Inserts java instructions into a given override method of a given class. Before the overriden method call.
+     * @param targetClass the class to inject code into.
+     * @param targetMethodName the method to inject code into. Body will be injected right before the call to super.&lt;targetName&gt;.
+     * @param body the instructions of java to be injected.
+     * @throws CannotCompileException if the source contained in insertableMethod can't be compiled.
+     * @throws AfterBurnerImpossibleException if something else goes wrong, wraps other exceptions.
+     */
+    public void beforeOverrideMethod(CtClass targetClass, String targetMethodName, String body) throws CannotCompileException, AfterBurnerImpossibleException, NotFoundException {
+        InsertableMethod insertableMethod = new InsertableMethodBuilder(this, signatureExtractor).insertIntoClass(targetClass).beforeOverrideMethod(targetMethodName).withBody(body).createInsertableMethod();
+        addOrInsertMethod(insertableMethod);
+    }
+
+    /**
+     * Add/Inserts java instructions into a given override method of a given class. After the overriden method call.
      * @param targetClass the class to inject code into.
      * @param targetMethodName the method to inject code into. Body will be injected right after the call to super.&lt;targetName&gt;.
      * @param body the instructions of java to be injected.
@@ -65,7 +78,7 @@ public class AfterBurner {
      * @throws AfterBurnerImpossibleException if something else goes wrong, wraps other exceptions.
      */
     public void afterOverrideMethod(CtClass targetClass, String targetMethodName, String body) throws CannotCompileException, AfterBurnerImpossibleException, NotFoundException {
-        InsertableMethod insertableMethod = new InsertableMethod.Builder(this, signatureExtractor).insertIntoClass(targetClass).afterOverrideMethod(targetMethodName).withBody(body).createInsertableMethod();
+        InsertableMethod insertableMethod = new InsertableMethodBuilder(this, signatureExtractor).insertIntoClass(targetClass).afterOverrideMethod(targetMethodName).withBody(body).createInsertableMethod();
         addOrInsertMethod(insertableMethod);
     }
 
