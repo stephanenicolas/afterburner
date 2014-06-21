@@ -106,7 +106,7 @@ CtClass classToInsertInto = ClassPool.getDefaultPool().get(ActivityA.class);
 builder
   .insertIntoClass(classToInsertInto)
   .afterOverrideMethod("onCreate")
-  .withBody("System.out.println("Hello World");")
+  .withBody("System.out.println(\"Hello World\");")
   .doIt();
 ```
 
