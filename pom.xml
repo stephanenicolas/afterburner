@@ -6,6 +6,40 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<name>Afterburner</name>
 	<description>A library to help other librairies getting rid of boiler plate via byte code manipulation. Works on Android too.</description>
+	<inceptionYear>2014</inceptionYear>
+
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
+
+	<scm>
+		<connection>scm:git:ssh://git@github.com/stephanenicolas/afterburner.git</connection>
+		<url>git:ssh://git@github.com/stephanenicolas/afterburner.git</url>
+		<developerConnection>scm:git:ssh://git@github.com/stephanenicolas/afterburner.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+
+	<licenses>
+		<license>
+			<name>Apache 2</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<issueManagement>
+		<system>Github Issue Tracker</system>
+		<url>https://github.com/stephanenicolas/afterburner/issues</url>
+	</issueManagement>
+
+	<developers>
+		<developer>
+			<id>SNI</id>
+			<name>Stéphane Nicolas</name>
+			<email>steff.nicolas@gmail.com</email>
+		</developer>
+	</developers>
 
 	<properties>
 		<java.version>1.6</java.version>
