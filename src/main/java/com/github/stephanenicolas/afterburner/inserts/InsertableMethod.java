@@ -9,7 +9,17 @@ import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
 
+/**
+ * Base class of all insertable methods through AfterBurner.
+ * Inserts code into a given method. It will inject code using an "insertion point", i.e. 
+ * a method call inside the target method, either before or after it.
+ * If there is no method to insert into, fully create the target method.
+ * Due to limitations in javassist (https://github.com/jboss-javassist/javassist/issues/9),
+ * one of the overloads of the target method is chosen arbitrarily to insert code.  
+ * @author SNI
+ */
 public abstract class InsertableMethod extends Insertable {
+    public static final String BODY_TAG = "==BODY==";
 
     public InsertableMethod(CtClass classToInsertInto) {
         super(classToInsertInto);
@@ -23,15 +33,35 @@ public abstract class InsertableMethod extends Insertable {
         return null;
     }
 
+    /**
+     * Return the full method (signature + body) to add to the classToInsertInto.
+     * A special mechanism allow to replace the tag #BODY_TAG by the result of #getBody().
+     * @return the full method (signature + body) to add to the classToInsertInto.
+     * @throws AfterBurnerImpossibleException in case something goes wrong. Wrap all exceptions into it.
+     */
     public abstract String getFullMethod() throws AfterBurnerImpossibleException;
 
+    /**
+     * Return the java statements to insert.
+     * @return the instructions (no signature) to insert;
+     * @throws AfterBurnerImpossibleException in case something goes wrong. Wrap all exceptions into it.
+     */
     public abstract String getBody() throws AfterBurnerImpossibleException;
 
+    /**
+     * Return the name of the method to insert code into.
+     * @return the name of the method to insert code into.
+     * @throws AfterBurnerImpossibleException in case something goes wrong. Wrap all exceptions into it.
+     */
     public abstract String getTargetMethodName() throws AfterBurnerImpossibleException;
 
+    /**
+     * Almost a DSL/builder to ease creating an InsertableMethod.
+     * Needs more intermediate states.
+     * @author SNI
+     */
     public static class Builder {
 
-        private static final String BODY_TAG = "==BODY==";
         private String targetMethod;
         private CtClass classToInsertInto;
         protected String fullMethod;
@@ -39,13 +69,13 @@ public abstract class InsertableMethod extends Insertable {
         protected String insertionBeforeMethod;
         protected String insertionAfterMethod;
         private AfterBurner afterBurner;
-        private SignatureExtractor signatureExtractor;
+        private CtMethodJavaWriter signatureExtractor;
 
         public Builder(AfterBurner afterBurner) {
             this(afterBurner, null);
         }
 
-        public Builder(AfterBurner afterBurner, SignatureExtractor signatureExtractor) {
+        public Builder(AfterBurner afterBurner, CtMethodJavaWriter signatureExtractor) {
             this.afterBurner = afterBurner;
             this.signatureExtractor = signatureExtractor;
         }
@@ -84,12 +114,12 @@ public abstract class InsertableMethod extends Insertable {
             this.fullMethod = fullMethod;
             return this;
         }
-        
+
         public Builder afterOverrideMethod(String targetMethod) throws NotFoundException {
             this.targetMethod = targetMethod;
             this.insertionAfterMethod = targetMethod;
             CtMethod overridenMethod = classToInsertInto.getDeclaredMethod(targetMethod);
-            fullMethod = signatureExtractor.extractSignature(overridenMethod) + " { \n"
+            fullMethod = signatureExtractor.createJavaSignature(overridenMethod) + " { \n"
                     + signatureExtractor.invokeSuper(overridenMethod) + "\n"
                     + BODY_TAG + "}\n";
 
@@ -97,7 +127,7 @@ public abstract class InsertableMethod extends Insertable {
         }
 
         public void doIt() throws CannotCompileException,
-                AfterBurnerImpossibleException {
+        AfterBurnerImpossibleException {
 
             InsertableMethod method = createInsertableMethod();
             afterBurner.addOrInsertMethod(method);

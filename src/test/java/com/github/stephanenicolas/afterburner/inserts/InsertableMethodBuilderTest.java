@@ -20,7 +20,7 @@ import com.github.stephanenicolas.afterburner.exception.AfterBurnerImpossibleExc
 public class InsertableMethodBuilderTest {
 
     private InsertableMethod.Builder builder;
-    private SignatureExtractor signatureExtractorMock;
+    private CtMethodJavaWriter signatureExtractorMock;
     private AfterBurner afterBurnerMock;
     
     @Before
@@ -64,9 +64,9 @@ public class InsertableMethodBuilderTest {
         afterBurnerMock = EasyMock.createMock(AfterBurner.class);
         afterBurnerMock.addOrInsertMethod((InsertableMethod) EasyMock.anyObject());
         EasyMock.replay(afterBurnerMock);
-        signatureExtractorMock = EasyMock.createMock(SignatureExtractor.class);
+        signatureExtractorMock = EasyMock.createMock(CtMethodJavaWriter.class);
         EasyMock.expect(signatureExtractorMock.invokeSuper((CtMethod) EasyMock.anyObject())).andReturn("super.foo()");
-        EasyMock.expect(signatureExtractorMock.extractSignature((CtMethod) EasyMock.anyObject())).andReturn("public void foo()");
+        EasyMock.expect(signatureExtractorMock.createJavaSignature((CtMethod) EasyMock.anyObject())).andReturn("public void foo()");
         EasyMock.replay(signatureExtractorMock);
 
         CtClass targetClassAncestor = ClassPool.getDefault().makeClass(

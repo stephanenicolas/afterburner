@@ -17,17 +17,28 @@ import org.slf4j.Logger;
 import com.github.stephanenicolas.afterburner.exception.AfterBurnerImpossibleException;
 import com.github.stephanenicolas.afterburner.inserts.InsertableConstructor;
 import com.github.stephanenicolas.afterburner.inserts.InsertableMethod;
-import com.github.stephanenicolas.afterburner.inserts.SignatureExtractor;
+import com.github.stephanenicolas.afterburner.inserts.CtMethodJavaWriter;
 
+/**
+ * Allows to modify byte code of java classes via javassist.
+ * This class allows a rich API to injeect byte code into methods or constructors of a given class.
+ * @author SNI
+ */
 public class AfterBurner {
     private Logger logger;
-    private SignatureExtractor signatureExtractor;
+    private CtMethodJavaWriter signatureExtractor;
 
     public AfterBurner(Logger logger) {
         this.logger = logger;
-        signatureExtractor = new SignatureExtractor();
+        signatureExtractor = new CtMethodJavaWriter();
     }
 
+    /**
+     * Add/Inserts java instructions into a given method of a given class.
+     * @param insertableMethod contains all information to perform byte code injection.
+     * @throws CannotCompileException if the source contained in insertableMethod can't be compiled. 
+     * @throws AfterBurnerImpossibleException if something else goes wrong, wraps other exceptions.
+     */
     public void addOrInsertMethod(InsertableMethod insertableMethod) throws CannotCompileException, AfterBurnerImpossibleException {
         // create or complete onViewCreated
         String targetMethodName = insertableMethod.getTargetMethodName();
@@ -45,12 +56,26 @@ public class AfterBurner {
         }
     }
     
+    /**
+     * Add/Inserts java instructions into a given override method of a given class.
+     * @param targetClass the class to inject code into.
+     * @param targetMethodName the method to inject code into. Body will be injected right after the call to super.&lt;targetName&gt;.
+     * @param body the instructions of java to be injected.
+     * @throws CannotCompileException if the source contained in insertableMethod can't be compiled.
+     * @throws AfterBurnerImpossibleException if something else goes wrong, wraps other exceptions.
+     */
     public void afterOverrideMethod(CtClass targetClass, String targetMethodName, String body) throws CannotCompileException, AfterBurnerImpossibleException, NotFoundException {
         InsertableMethod insertableMethod = new InsertableMethod.Builder(this, signatureExtractor).insertIntoClass(targetClass).afterOverrideMethod(targetMethodName).withBody(body).createInsertableMethod();
         addOrInsertMethod(insertableMethod);
     }
 
 
+    /**
+     * Inserts java instructions into all constructors a given class.
+     * @param insertableConstructor contains all information about insertion.
+     * @throws CannotCompileException if the source contained in insertableMethod can't be compiled.
+     * @throws AfterBurnerImpossibleException if something else goes wrong, wraps other exceptions.
+     */
     public void insertConstructor(InsertableConstructor insertableConstructor) throws CannotCompileException, AfterBurnerImpossibleException,
     NotFoundException {
         // create or complete onViewCreated
@@ -69,6 +94,14 @@ public class AfterBurner {
         }
     }
 
+    /**
+     * Returns the method name methodName in classToTransform. Null if not found.
+     * Due to limitations of javassist, in case of multiple overloads, one of them only is returned.
+     * (https://github.com/jboss-javassist/javassist/issues/9)
+     * @param classToTransform the class that should contain a method methodName.
+     * @param methodName the name of the method to retrieve.
+     * @return the method name methodName in classToTransform. Null if not found.
+     */
     public CtMethod extractExistingMethod(final CtClass classToTransform,
             String methodName) {
         try {

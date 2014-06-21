@@ -13,13 +13,13 @@ import org.junit.Test;
 
 import com.github.stephanenicolas.afterburner.TestCounter;
 
-public class SignatureExtractorTest {
+public class CtMethodJavaWriterTest {
 
-    SignatureExtractor signatureExtractor;
+    CtMethodJavaWriter signatureExtractor;
     
     @Before
     public void setUp() throws Exception {
-        signatureExtractor = new SignatureExtractor();
+        signatureExtractor = new CtMethodJavaWriter();
     }
 
     @Test
@@ -31,7 +31,7 @@ public class SignatureExtractorTest {
         targetClass.addMethod(fooMethod);
 
         //WHEN
-        String extractSignature = signatureExtractor.extractSignature(fooMethod);
+        String extractSignature = signatureExtractor.createJavaSignature(fooMethod);
         
         //THEN
         assertEquals("public void foo()", extractSignature);
@@ -46,7 +46,7 @@ public class SignatureExtractorTest {
         targetClass.addMethod(fooMethod);
 
         //WHEN
-        String extractSignature = signatureExtractor.extractSignature(fooMethod);
+        String extractSignature = signatureExtractor.createJavaSignature(fooMethod);
 
         //THEN
         assertEquals("public int foo()", extractSignature);
@@ -61,7 +61,7 @@ public class SignatureExtractorTest {
         targetClass.addMethod(fooMethod);
 
         //WHEN
-        String extractSignature = signatureExtractor.extractSignature(fooMethod);
+        String extractSignature = signatureExtractor.createJavaSignature(fooMethod);
 
         //THEN
         assertEquals("public void foo(int p0, java.lang.String p1)", extractSignature);
@@ -76,7 +76,7 @@ public class SignatureExtractorTest {
         targetClass.addMethod(fooMethod);
 
         //WHEN
-        String extractSignature = signatureExtractor.extractSignature(fooMethod);
+        String extractSignature = signatureExtractor.createJavaSignature(fooMethod);
 
         //THEN
         assertEquals("public void foo() throws java.lang.Exception, java.lang.Throwable", extractSignature);

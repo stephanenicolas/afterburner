@@ -5,16 +5,31 @@ import javassist.CtMethod;
 import javassist.Modifier;
 import javassist.NotFoundException;
 
-public class SignatureExtractor {
-
-    public String extractSignature(CtMethod overridenMethod) throws NotFoundException {
+/**
+ * Deals with some aspect of code generation regarding a {@link #CtMethod};
+ * @author SNI
+ */
+public class CtMethodJavaWriter {
+    /**
+     * Returns the signature of a method like "public abstract foo(Object o) throws Exception, Throwable".
+     * @param overridenMethod the method to generate the signature of.
+     * @return the signature of overridenMethod like "public abstract foo(Object o) throws Exception, Throwable".
+     * @throws NotFoundException if a type is not found (like parameter types).
+     */
+    public String createJavaSignature(CtMethod overridenMethod) throws NotFoundException {
         return extractModifier(overridenMethod) + " "
                 + extractReturnType(overridenMethod) + " "
                 + overridenMethod.getName() + "("
                 + extractParametersAndTypes(overridenMethod) + ")"
                 + extractThrowClause(overridenMethod);
     }
-    
+
+    /**
+     * Invokes the super implemntation of a method like "super.foo(o)".
+     * @param overridenMethod the method to generate the super impl invocation of.
+     * @return the super implemntation of a method like "super.foo(o)".
+     * @throws NotFoundException if a type is not found (like parameter types).
+     */
     public String invokeSuper(CtMethod method) throws NotFoundException {
         return "super."
                 + method.getName() + "("
