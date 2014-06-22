@@ -3,6 +3,7 @@ AfterBurner
 
 [![Coverage Status](https://img.shields.io/coveralls/stephanenicolas/afterburner.svg)](https://coveralls.io/r/stephanenicolas/afterburner?branch=master)
 [![Travis Build](https://travis-ci.org/stephanenicolas/afterburner.svg?branch=master)](https://travis-ci.org/stephanenicolas/afterburner)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.stephanenicolas.afterburner/afterburner/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.stephanenicolas.afterburner/afterburner)
 
 A library to help other librairies getting rid of boiler plate via byte code manipulation. Works on Android too. 
 
