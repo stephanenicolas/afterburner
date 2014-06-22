@@ -7,4 +7,5 @@ before_install:
  - mvn clean install
  - cd ..
 
+install: mvn clean install -Dfindbugs.skip -Dcheckstyle.skip -Djacoco.skip=true -Dcoveralls.skip=true
 script: mvn clean install 
