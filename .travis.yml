@@ -1,4 +1,10 @@
 language: java
 jdk: oraclejdk7
     
+before_script: 
+ - git clone https://github.com/icon-Systemhaus-GmbH/javassist-maven-plugin.git
+ - cd javassist-maven-plugin
+ - mvn clean install
+ - cd ..
+
 script: mvn clean install 

@@ -52,6 +52,7 @@
 		<maven-checkstyle-plugin.version>2.11</maven-checkstyle-plugin.version>
 		<findbugs-maven-plugin.version>2.5.3</findbugs-maven-plugin.version>
 		<eclipse-lifecycle-plugin.version>1.0.0</eclipse-lifecycle-plugin.version>
+		<jacoco-maven-plugin.version>0.7.1.201405082137</jacoco-maven-plugin.version>
 
 		<!--LIBRARIES -->
 		<android-map.version>7_r1</android-map.version>
@@ -185,7 +186,63 @@
 					</execution>
 				</executions>
 			</plugin>
-
+			<!-- CODE COVERAGE FOR UNIT-TESTS http://www.javacodegeeks.com/2013/08/creating-code-coverage-reports-for-unit-and-integration-tests-with-the-jacoco-maven-plugin.html -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco-maven-plugin.version}</version>
+				<configuration>
+					<excludes>
+						<exclude>**/*Exception.class</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<!-- Prepares the property pointing to the JaCoCo runtime agent which 
+						is passed as VM argument when Maven the Surefire plugin is executed. -->
+					<execution>
+						<id>pre-unit-test</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the path to the file which contains the execution data. -->
+							<destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
+						</configuration>
+					</execution>
+					<!-- Ensures that the code coverage report for unit tests is created 
+						after unit tests have been run. -->
+					<execution>
+						<id>post-unit-test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the path to the file which contains the execution data. -->
+							<dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
+							<!-- Sets the output directory for the code coverage report. -->
+							<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.eluder.coveralls</groupId>
+				<artifactId>coveralls-maven-plugin</artifactId>
+				<version>2.2.0</version>
+				<executions>
+					<execution>
+						<id>post-unit-test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>jacoco</goal>
+						</goals>
+						<configuration>
+							<coverageFile>${project.reporting.outputDirectory}/jacoco-ut/jacoco.xml</coverageFile>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -243,6 +300,19 @@
 										</versionRange>
 										<goals>
 											<goal>javassist</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.jacoco</groupId>
+										<artifactId>jacoco-maven-plugin</artifactId>
+										<versionRange>[0.7.1.201405082137,)</versionRange>
+										<goals>
+											<goal>prepare-agent</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
