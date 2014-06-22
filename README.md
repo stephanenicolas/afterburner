@@ -1,6 +1,8 @@
 AfterBurner
 ===========
 
+[![Coverage Status](https://img.shields.io/coveralls/stephanenicolas/afterburner.svg)](https://coveralls.io/r/stephanenicolas/afterburner?branch=master)
+
 A library to help other librairies getting rid of boiler plate via byte code manipulation. Works on Android too. 
 
 AfterBurner can be used to inject byte code, in an easy way (via [javassist](https://github.com/jboss-javassist/javassist)), into a given class and target method.
