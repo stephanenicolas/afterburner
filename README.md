@@ -15,6 +15,8 @@ Mutliple plugins can be used to trigger AfterBurner on maven and gradle :
 * [for gradle](https://github.com/darylteo/gradle-plugins)
 * [for maven](https://github.com/icon-Systemhaus-GmbH/javassist-maven-plugin)
 
+An annotation based equivalent of AfterBurner is available on GitHub : (Mimic)[https://github.com/stephanenicolas/mimic].
+
 Examples
 --------
 
