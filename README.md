@@ -95,6 +95,22 @@ afterBurner.addOrInsertMethod(new InsertableMethod(ClassPool.getDefaultPool().ge
 });
 ```
 
+there is even a small trick you can use to create a full method and recycle its body : 
+
+```java
+afterBurner.addOrInsertMethod(new InsertableMethod(ClassPool.getDefaultPool().get("A")) {
+    @Override
+    public String getFullMethod() throws AfterBurnerImpossibleException {
+        return "public void foo() { ___BODY___ }";
+    }
+    ...
+
+});
+```
+
+the token `___BODY___` will be replaced by the result of `getBody()`.
+
+
 #### An android example
 
 Let's say you got an activity class `ActivityA` :  
