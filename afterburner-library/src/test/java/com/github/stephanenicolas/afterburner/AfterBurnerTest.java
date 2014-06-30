@@ -1,7 +1,6 @@
 package com.github.stephanenicolas.afterburner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -13,6 +12,7 @@ import javassist.CtMethod;
 import javassist.CtNewConstructor;
 import javassist.CtNewMethod;
 
+import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,7 +70,7 @@ public class AfterBurnerTest {
         assertHasFooMethodWithReturnValue(target, false);
         assertHasFooFieldWithValue(target, 2);
     }
-    
+
     @Test
     public void testInsertConstructor() throws Exception {
         // GIVEN
@@ -86,6 +86,54 @@ public class AfterBurnerTest {
         targetClass = target.toClass();
         targetInstance = targetClass.newInstance();
         assertHasFooFieldWithValue(target, 2);
+    }
+
+    @Test
+    public void testBeforeOverride() throws Exception {
+        // GIVEN
+        target.addMethod(CtNewMethod.make("public void foo() { }", target));
+        afterBurner = EasyMock.createMockBuilder(AfterBurner.class).withConstructor(EasyMock.createNiceMock(Logger.class)).addMockedMethod("addOrInsertMethod").createMock();
+        Capture<InsertableMethod> captured = new Capture<InsertableMethod>();
+        afterBurner.addOrInsertMethod(EasyMock.capture(captured));
+        EasyMock.expectLastCall().once();
+        EasyMock.replay(afterBurner);
+
+        String targetMethodName = "foo";
+        String body = "foo = 2;";
+
+        // WHEN
+        afterBurner.beforeOverrideMethod(target, targetMethodName, body);
+
+        // THEN
+        EasyMock.verify(afterBurner);
+        assertEquals(body, captured.getValue().getBody());
+        assertEquals(targetMethodName, captured.getValue().getInsertionBeforeMethod());
+        assertNull(captured.getValue().getInsertionAfterMethod());
+        assertEquals(target, captured.getValue().getClassToInsertInto());
+    }
+
+    @Test
+    public void testAfterOverride() throws Exception {
+        // GIVEN
+        target.addMethod(CtNewMethod.make("public void foo() { }", target));
+        afterBurner = EasyMock.createMockBuilder(AfterBurner.class).withConstructor(EasyMock.createNiceMock(Logger.class)).addMockedMethod("addOrInsertMethod").createMock();
+        Capture<InsertableMethod> captured = new Capture<InsertableMethod>();
+        afterBurner.addOrInsertMethod(EasyMock.capture(captured));
+        EasyMock.expectLastCall().once();
+        EasyMock.replay(afterBurner);
+
+        String targetMethodName = "foo";
+        String body = "foo = 2;";
+
+        // WHEN
+        afterBurner.afterOverrideMethod(target, targetMethodName, body);
+
+        // THEN
+        EasyMock.verify(afterBurner);
+        assertEquals(body, captured.getValue().getBody());
+        assertNull(captured.getValue().getInsertionBeforeMethod());
+        assertEquals(targetMethodName, captured.getValue().getInsertionAfterMethod());
+        assertEquals(target, captured.getValue().getClassToInsertInto());
     }
 
     private void assertHasFooMethodWithReturnValue(CtClass clazz, boolean returnValue) throws Exception {
