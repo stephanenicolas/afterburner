@@ -2,10 +2,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.stephanenicolas.afterburner</groupId>
-	<artifactId>afterburner</artifactId>
+	<artifactId>afterburner-parent</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<name>Afterburner</name>
-	<description>A library to help other librairies getting rid of boiler plate via byte code manipulation. Works on Android too.</description>
+	<name>afterburner Parent</name>
+	<packaging>pom</packaging>
+	<description>afterburnering is, indeed, kind of way to bypass java single inheritance paradigm. It allows to copy all declared fields, constructors and methods in a given class into another class.</description>
 	<inceptionYear>2014</inceptionYear>
 
 	<parent>
@@ -13,6 +14,12 @@
 		<artifactId>oss-parent</artifactId>
 		<version>7</version>
 	</parent>
+
+	<modules>
+		<module>afterburner-library</module>
+		<module>afterburner-sample-processor</module>
+		<module>afterburner-sample</module>
+	</modules>
 
 	<scm>
 		<connection>scm:git:ssh://git@github.com/stephanenicolas/afterburner.git</connection>
@@ -43,220 +50,90 @@
 
 	<properties>
 		<java.version>1.6</java.version>
-
-		<!--PLUGINS -->
-		<maven-jar-plugin.version>2.4</maven-jar-plugin.version>
-		<maven-source-plugin.version>2.2</maven-source-plugin.version>
-		<maven-javadoc-plugin.version>2.8</maven-javadoc-plugin.version>
 		<maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
+		<eclipse-lifecycle-plugin.version>1.0.0</eclipse-lifecycle-plugin.version>
 		<maven-checkstyle-plugin.version>2.11</maven-checkstyle-plugin.version>
 		<findbugs-maven-plugin.version>2.5.3</findbugs-maven-plugin.version>
-		<eclipse-lifecycle-plugin.version>1.0.0</eclipse-lifecycle-plugin.version>
-		<jacoco-maven-plugin.version>0.7.1.201405082137</jacoco-maven-plugin.version>
-
-		<!--LIBRARIES -->
-		<android-map.version>7_r1</android-map.version>
-		<android-support-v4.version>19</android-support-v4.version>
-		<android-appcompat-v7.version>19</android-appcompat-v7.version>
-		<actionbarsherlock.version>4.2.0</actionbarsherlock.version>
-		<jsr305.version>2.0.3</jsr305.version>
-		<findbugs-annotations.version>1.0.0</findbugs-annotations.version>
-		<guice.version>3.0</guice.version>
-
-		<!--TESTING -->
-		<easymock.version>3.2</easymock.version>
-		<junit.version>4.11</junit.version>
+		<maven-jar-plugin.version>2.4</maven-jar-plugin.version>
+		<maven-source-plugin.version>2.2</maven-source-plugin.version>
 	</properties>
 
-	<dependencies>
-		<!-- TEST DEPENDENCIES -->
-		<!-- http://stackoverflow.com/a/18463743/693752 -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- DEPENDENCIES -->
-		<dependency>
-			<groupId>org.javassist</groupId>
-			<artifactId>javassist</artifactId>
-			<version>3.18.1-GA</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.7</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.code.findbugs</groupId>
-			<artifactId>jsr305</artifactId>
-			<version>${jsr305.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>findbugs</groupId>
-			<artifactId>annotations</artifactId>
-			<version>${findbugs-annotations.version}</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>com.google.inject</groupId>
-			<artifactId>guice</artifactId>
-			<version>${guice.version}</version>
-			<classifier>no_aop</classifier>
-		</dependency>
-
-		<!-- TEST DEPENDENCIES -->
-		<dependency>
-			<groupId>org.easymock</groupId>
-			<artifactId>easymock</artifactId>
-			<version>${easymock.version}</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-
 	<build>
-		<defaultGoal>package</defaultGoal>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven-compiler-plugin.version}</version>
-				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>${maven-jar-plugin.version}</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>test-jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>${maven-source-plugin.version}</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>${maven-checkstyle-plugin.version}</version>
-				<configuration>
-					<configLocation>afterburner_checks.xml</configLocation>
-					<enableRulesSummary>false</enableRulesSummary>
-				</configuration>
-				<executions>
-					<execution>
-						<id>checkstyle-check</id>
-						<phase>process-sources</phase>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>${findbugs-maven-plugin.version}</version>
-				<executions>
-					<execution>
-						<id>findbugs-check</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- CODE COVERAGE FOR UNIT-TESTS http://www.javacodegeeks.com/2013/08/creating-code-coverage-reports-for-unit-and-integration-tests-with-the-jacoco-maven-plugin.html -->
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>${jacoco-maven-plugin.version}</version>
-				<configuration>
-					<excludes>
-						<exclude>**/*Exception.class</exclude>
-					</excludes>
-				</configuration>
-				<executions>
-					<!-- Prepares the property pointing to the JaCoCo runtime agent which 
-						is passed as VM argument when Maven the Surefire plugin is executed. -->
-					<execution>
-						<id>pre-unit-test</id>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-						<configuration>
-							<!-- Sets the path to the file which contains the execution data. -->
-							<destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
-						</configuration>
-					</execution>
-					<!-- Ensures that the code coverage report for unit tests is created 
-						after unit tests have been run. -->
-					<execution>
-						<id>post-unit-test</id>
-						<phase>test</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-						<configuration>
-							<!-- Sets the path to the file which contains the execution data. -->
-							<dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
-							<!-- Sets the output directory for the code coverage report. -->
-							<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.eluder.coveralls</groupId>
-				<artifactId>coveralls-maven-plugin</artifactId>
-				<version>2.2.0</version>
-				<executions>
-					<execution>
-						<id>post-unit-test</id>
-						<phase>test</phase>
-						<goals>
-							<goal>jacoco</goal>
-						</goals>
-						<configuration>
-							<coverageFile>${project.reporting.outputDirectory}/jacoco-ut/jacoco.xml</coverageFile>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${maven-compiler-plugin.version}</version>
+					<configuration>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-checkstyle-plugin</artifactId>
+					<version>${maven-checkstyle-plugin.version}</version>
+					<configuration>
+						<configLocation>afterburner_checks.xml</configLocation>
+						<enableRulesSummary>false</enableRulesSummary>
+					</configuration>
+					<executions>
+						<execution>
+							<id>checkstyle-check</id>
+							<phase>process-sources</phase>
+							<goals>
+								<goal>check</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>findbugs-maven-plugin</artifactId>
+					<version>${findbugs-maven-plugin.version}</version>
+					<executions>
+						<execution>
+							<id>findbugs-check</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>check</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>${maven-jar-plugin.version}</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>test-jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>${maven-source-plugin.version}</version>
+					<executions>
+						<execution>
+							<id>attach-sources</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>jar-no-fork</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
 				<!-- Eclipse config -->
 				<!-- http://stackoverflow.com/questions/13040788/how-to-elimate-the-maven-enforcer-plugin-goal-enforce-is-ignored-by-m2e-wa -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
-					<version>${eclipse-lifecycle-plugin.version}</version>
+					<version>1.0.0</version>
 					<configuration>
 						<lifecycleMappingMetadata>
 							<pluginExecutions>
@@ -294,6 +171,25 @@
 								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
+										<groupId>
+											de.icongmbh.oss.maven.plugins
+										</groupId>
+										<artifactId>
+											javassist-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.1.0-SNAPSHOT,)
+										</versionRange>
+										<goals>
+											<goal>javassist</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
 										<groupId>org.jacoco</groupId>
 										<artifactId>jacoco-maven-plugin</artifactId>
 										<versionRange>[0.7.1.201405082137,)</versionRange>
@@ -313,21 +209,6 @@
 		</pluginManagement>
 	</build>
 
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>${maven-javadoc-plugin.version}</version>
-				<configuration>
-					<reportOutputDirectory>docs</reportOutputDirectory>
-					<destDir>apidocs</destDir>
-					<notimestamp>true</notimestamp>
-				</configuration>
-			</plugin>
-		</plugins>
-	</reporting>
-
 	<repositories>
 		<repository>
 			<id>third.party.closed.source.repo</id>
@@ -335,4 +216,14 @@
 		</repository>
 	</repositories>
 
+	<profiles>
+		<profile>
+			<id>fast</id>
+			<properties>
+				<skipTests>true</skipTests>
+				<checkstyle.skip>true</checkstyle.skip>
+				<findbugs.skip>true</findbugs.skip>
+			</properties>
+		</profile>
+	</profiles>
 </project>

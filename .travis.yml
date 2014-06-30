@@ -2,4 +2,4 @@ language: java
 jdk: oraclejdk7
     
 install: mvn clean install -Dfindbugs.skip -Dcheckstyle.skip -Djacoco.skip=true -Dcoveralls.skip=true -DskipTests=true
-script: mvn clean install 
+script: mvn clean install -Pcoverage
