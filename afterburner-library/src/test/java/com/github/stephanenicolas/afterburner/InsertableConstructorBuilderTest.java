@@ -1,9 +1,8 @@
 package com.github.stephanenicolas.afterburner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import javassist.CannotCompileException;
+import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.NotFoundException;
 
@@ -63,6 +62,26 @@ public class InsertableConstructorBuilderTest {
         assertNotNull(constructor);
         assertEquals(classToInsertInto, constructor.getClassToInsertInto());
         assertEquals(body, constructor.getConstructorBody(null));
+        assertTrue(constructor.acceptParameters(null));
+    }
+
+    @Test
+    public void testCheckAllFields_should_succeed_with_all_fields_defined_using_class() throws Exception {
+        //GIVEN
+        String body = "";
+        Class<?> classToInsertInto = String.class;
+        builder
+            .insertIntoClass(classToInsertInto )
+            .withBody(body);
+
+        //WHEN
+        InsertableConstructor constructor = builder.createInsertableConstructor();
+
+        //THEN
+        assertNotNull(constructor);
+        assertEquals(ClassPool.getDefault().get(String.class.getName()), constructor.getClassToInsertInto());
+        assertEquals(body, constructor.getConstructorBody(null));
+        assertTrue(constructor.acceptParameters(null));
     }
 
     @Test(expected = AfterBurnerImpossibleException.class)
