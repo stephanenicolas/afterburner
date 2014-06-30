@@ -1,5 +1,6 @@
 package com.github.stephanenicolas.afterburner;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import javassist.CannotCompileException;
@@ -17,13 +18,13 @@ public class InsertableConstructorBuilderTest {
 
     private InsertableConstructorBuilder builder;
     private AfterBurner afterBurnerMock;
-    
+
     @Before
     public void setUp() {
         afterBurnerMock = EasyMock.createNiceMock(AfterBurner.class);
         builder = new InsertableConstructorBuilder(afterBurnerMock);
     }
-    
+
     @Test
     public void testDoIt_calls_afterburner() throws CannotCompileException, AfterBurnerImpossibleException, NotFoundException {
         //GIVEN
@@ -60,6 +61,8 @@ public class InsertableConstructorBuilderTest {
 
         //THEN
         assertNotNull(constructor);
+        assertEquals(classToInsertInto, constructor.getClassToInsertInto());
+        assertEquals(body, constructor.getConstructorBody(null));
     }
 
     @Test(expected = AfterBurnerImpossibleException.class)

@@ -1,7 +1,6 @@
 package com.github.stephanenicolas.afterburner;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -168,16 +167,22 @@ public class InsertableMethodBuilderTest {
 
         //THEN
         assertNotNull(method);
+        assertEquals(classToInsertInto, method.getClassToInsertInto());
+        assertEquals(targetMethod, method.getTargetMethodName());
+        assertNull(method.getInsertionBeforeMethod());
+        assertEquals(insertionAfterMethod, method.getInsertionAfterMethod());
+        assertEquals(fullMethod, method.getFullMethod());
+        assertEquals(body, method.getBody());
     }
 
     @Test
     public void testCheckAllFields_should_succeed_with_insert_before_method_defined() throws AfterBurnerImpossibleException {
         //GIVEN
         CtClass classToInsertInto = CtClass.intType;
-        String targetMethod = "";
-        String insertionBeforeMethod = "";
-        String fullMethod = "";
-        String body = "";
+        String targetMethod = "target";
+        String insertionBeforeMethod = "insertionBeforeMethod";
+        String fullMethod = "fullMethod";
+        String body = "body";
         builder
             .insertIntoClass(classToInsertInto)
             .inMethodIfExists(targetMethod)
@@ -190,6 +195,12 @@ public class InsertableMethodBuilderTest {
 
         //THEN
         assertNotNull(method);
+        assertEquals(classToInsertInto, method.getClassToInsertInto());
+        assertEquals(targetMethod, method.getTargetMethodName());
+        assertEquals(insertionBeforeMethod, method.getInsertionBeforeMethod());
+        assertNull(method.getInsertionAfterMethod());
+        assertEquals(fullMethod, method.getFullMethod());
+        assertEquals(body, method.getBody());
     }
 
     @Test(expected = AfterBurnerImpossibleException.class)
