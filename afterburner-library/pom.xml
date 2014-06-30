@@ -23,6 +23,7 @@
 		<findbugs-maven-plugin.version>2.5.3</findbugs-maven-plugin.version>
 		<eclipse-lifecycle-plugin.version>1.0.0</eclipse-lifecycle-plugin.version>
 		<jacoco-maven-plugin.version>0.7.1.201405082137</jacoco-maven-plugin.version>
+		<coveralls-maven-plugin.version>2.2.0</coveralls-maven-plugin.version>
 
 		<!--LIBRARIES -->
 		<android-map.version>7_r1</android-map.version>
