@@ -6,6 +6,7 @@ import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
+import javassist.CtNewConstructor;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
 
@@ -22,13 +23,24 @@ public class InsertableMethodBuilderTest {
     private InsertableMethodBuilder builder;
     private CtMethodJavaWriter signatureExtractorMock;
     private AfterBurner afterBurnerMock;
-    
+
     @Before
     public void setUp() {
         afterBurnerMock = EasyMock.createNiceMock(AfterBurner.class);
         builder = new InsertableMethodBuilder(afterBurnerMock, null);
     }
-    
+
+    @Test
+    public void testConstructor_with_afterburner_only() {
+        //GIVEN
+        builder = new InsertableMethodBuilder(afterBurnerMock);
+
+        //WHEN
+
+        //THEN
+        assertNotNull(builder);
+    }
+
     @Test
     public void testDoIt_calls_afterburner() throws CannotCompileException, AfterBurnerImpossibleException {
         //GIVEN
@@ -59,7 +71,7 @@ public class InsertableMethodBuilderTest {
     }
 
     @Test
-    public void testDoIt_calls_afterburner_with_override() throws CannotCompileException, AfterBurnerImpossibleException, NotFoundException {
+    public void testDoIt_calls_afterburner_with_after_override() throws CannotCompileException, AfterBurnerImpossibleException, NotFoundException {
         //GIVEN
         afterBurnerMock = EasyMock.createMock(AfterBurner.class);
         afterBurnerMock.addOrInsertMethod((InsertableMethod) EasyMock.anyObject());
@@ -94,6 +106,47 @@ public class InsertableMethodBuilderTest {
         //THEN
         EasyMock.verify(afterBurnerMock);
     }
+
+    @Test
+    public void testDoIt_calls_afterburner_with_before_override() throws CannotCompileException, AfterBurnerImpossibleException, NotFoundException {
+        //GIVEN
+        afterBurnerMock = EasyMock.createMock(AfterBurner.class);
+        afterBurnerMock.addOrInsertMethod((InsertableMethod) EasyMock.anyObject());
+        EasyMock.replay(afterBurnerMock);
+        signatureExtractorMock = EasyMock.createMock(CtMethodJavaWriter.class);
+        EasyMock.expect(signatureExtractorMock.invokeSuper((CtMethod) EasyMock.anyObject())).andReturn("super.foo()");
+        EasyMock.expect(signatureExtractorMock.createJavaSignature((CtMethod) EasyMock.anyObject())).andReturn("public void foo()");
+        EasyMock.replay(signatureExtractorMock);
+
+        CtClass targetClassAncestor = ClassPool.getDefault().makeClass(
+                "TargetAncestor" + TestCounter.testCounter++);
+        targetClassAncestor.addConstructor(CtNewConstructor.make("public " + targetClassAncestor.getName()+ "() { }", targetClassAncestor));
+        targetClassAncestor.addMethod(CtNewMethod.make("public void foo() { }", targetClassAncestor));
+
+        CtClass targetClass = ClassPool.getDefault().makeClass(
+                "Target" + TestCounter.testCounter++);
+        targetClass.setSuperclass(targetClassAncestor);
+        targetClass.addMethod(CtNewMethod.make("public void foo() { super.foo(); }", targetClass));
+
+        targetClassAncestor.toClass();
+
+        //WHEN
+        builder = new InsertableMethodBuilder(afterBurnerMock, signatureExtractorMock);
+
+        CtClass classToInsertInto = targetClass;
+        String targetMethod = "foo";
+        String body = "";
+        builder
+            .insertIntoClass(classToInsertInto.toClass())
+            .beforeOverrideMethod(targetMethod)
+            .withBody(body);
+
+        builder.doIt();
+
+        //THEN
+        EasyMock.verify(afterBurnerMock);
+    }
+
 
     @Test
     public void testCheckAllFields_should_succeed_with_insert_after_method_defined() throws AfterBurnerImpossibleException {
