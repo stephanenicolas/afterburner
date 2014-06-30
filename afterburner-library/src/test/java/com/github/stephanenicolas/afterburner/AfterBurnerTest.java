@@ -53,7 +53,7 @@ public class AfterBurnerTest {
     }
 
     @Test
-    public void testInsertMethod() throws Exception {
+    public void testInsertMethod_after() throws Exception {
         // GIVEN
         target.addMethod(CtNewMethod.make("public void bar() { }", target));
         target.addMethod(CtNewMethod.make("public boolean foo() { bar(); return false; }", target));
@@ -69,6 +69,40 @@ public class AfterBurnerTest {
         targetInstance = targetClass.newInstance();
         assertHasFooMethodWithReturnValue(target, false);
         assertHasFooFieldWithValue(target, 2);
+    }
+
+    public void testInsertMethod_before() throws Exception {
+        // GIVEN
+        target.addMethod(CtNewMethod.make("public void bar() { }", target));
+        target.addMethod(CtNewMethod.make("public boolean foo() { bar(); return false; }", target));
+        target.addField(new CtField(CtClass.intType, "foo", target));
+        InsertableMethod insertableMethod = new SimpleInsertableMethod(target,
+                "foo", null, "foo = 2;", "bar", null);
+
+        // WHEN
+        afterBurner.addOrInsertMethod(insertableMethod);
+
+        // THEN
+        targetClass = target.toClass();
+        targetInstance = targetClass.newInstance();
+        assertHasFooMethodWithReturnValue(target, false);
+        assertHasFooFieldWithValue(target, 2);
+    }
+
+    @Test(expected=AfterBurnerImpossibleException.class)
+    public void testInsertMethod_not_before_not_after() throws Exception {
+        // GIVEN
+        target.addMethod(CtNewMethod.make("public void bar() { }", target));
+        target.addMethod(CtNewMethod.make("public boolean foo() { bar(); return false; }", target));
+        target.addField(new CtField(CtClass.intType, "foo", target));
+        InsertableMethod insertableMethod = new SimpleInsertableMethod(target,
+                "foo", null, "foo = 2;", null, null);
+
+        // WHEN
+        afterBurner.addOrInsertMethod(insertableMethod);
+
+        // THEN
+        //fail
     }
 
     @Test
