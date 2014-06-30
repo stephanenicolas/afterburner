@@ -16,7 +16,7 @@ import com.github.stephanenicolas.afterburner.TestCounter;
 public class CtMethodJavaWriterTest {
 
     CtMethodJavaWriter signatureExtractor;
-    
+
     @Before
     public void setUp() throws Exception {
         signatureExtractor = new CtMethodJavaWriter();
@@ -32,7 +32,7 @@ public class CtMethodJavaWriterTest {
 
         //WHEN
         String extractSignature = signatureExtractor.createJavaSignature(fooMethod);
-        
+
         //THEN
         assertEquals("public void foo()", extractSignature);
     }
@@ -80,5 +80,35 @@ public class CtMethodJavaWriterTest {
 
         //THEN
         assertEquals("public void foo() throws java.lang.Exception, java.lang.Throwable", extractSignature);
+    }
+
+    @Test
+    public void testInvokeSuper_without_params() throws CannotCompileException, NotFoundException {
+        //GIVEN
+        CtClass targetClass = ClassPool.getDefault().makeClass(
+                "Target" + TestCounter.testCounter++);
+        CtMethod fooMethod = CtNewMethod.make("public void foo() {}", targetClass);
+        targetClass.addMethod(fooMethod);
+
+        //WHEN
+        String extractSignature = signatureExtractor.invokeSuper(fooMethod);
+
+        //THEN
+        assertEquals("super.foo()", extractSignature);
+    }
+
+    @Test
+    public void testInvokeSuper_with_params() throws CannotCompileException, NotFoundException {
+        //GIVEN
+        CtClass targetClass = ClassPool.getDefault().makeClass(
+                "Target" + TestCounter.testCounter++);
+        CtMethod fooMethod = CtNewMethod.make("public void foo(int a, String b) {}", targetClass);
+        targetClass.addMethod(fooMethod);
+
+        //WHEN
+        String extractSignature = signatureExtractor.invokeSuper(fooMethod);
+
+        //THEN
+        assertEquals("super.foo(p0, p1)", extractSignature);
     }
 }
