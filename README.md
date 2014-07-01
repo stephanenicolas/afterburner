@@ -117,7 +117,7 @@ the token `___BODY___` will be replaced by the result of `getBody()`.
 
 Let's say you got an activity class `ActivityA` :  
 ```java
-public class ActivityA {
+public class ActivityA extends Activity {
 }
 ```
 
