@@ -59,7 +59,7 @@ public class A {
   public void foo() {
      bar();
      //ADDED by AfterBurner
-    this.foo = 2;
+     this.foo = 2;
   }
 }
 ```
