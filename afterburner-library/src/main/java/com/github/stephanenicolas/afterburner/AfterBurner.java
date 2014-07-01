@@ -36,7 +36,7 @@ public class AfterBurner {
     /**
      * Add/Inserts java instructions into a given method of a given class.
      * @param insertableMethod contains all information to perform byte code injection.
-     * @throws CannotCompileException if the source contained in insertableMethod can't be compiled. 
+     * @throws CannotCompileException if the source contained in insertableMethod can't be compiled.
      * @throws AfterBurnerImpossibleException if something else goes wrong, wraps other exceptions.
      */
     public void addOrInsertMethod(InsertableMethod insertableMethod) throws CannotCompileException, AfterBurnerImpossibleException {
@@ -55,7 +55,7 @@ public class AfterBurner {
                     insertableMethod.getFullMethod(), classToTransform));
         }
     }
-    
+
     /**
      * Add/Inserts java instructions into a given override method of a given class. Before the overriden method call.
      * @param targetClass the class to inject code into.
@@ -102,8 +102,7 @@ public class AfterBurner {
                                 .getParameterTypes()));
             }
         } else {
-            getLogger().warn("No suitable constructor was found in class {}. Add a constructor with a single argument : Activity, Fragment or View. Don't use non static inner classes.",
-                    insertableConstructor.getClassToInsertInto().getName());
+            throw new AfterBurnerImpossibleException("No suitable constructor was found in class " + insertableConstructor.getClassToInsertInto().getName() + ". Add a constructor that is accepted by the InsertableConstructor. Don't use non static inner classes.");
         }
     }
 
@@ -159,10 +158,10 @@ public class AfterBurner {
                                 + insertableMethod.getClass()
                                 + " both insertionBeforeMethod && insertionAfterMethod are null.");
             } else if (insertionBeforeMethod != null) {
-                this.insertionMethod = insertionBeforeMethod;
+                insertionMethod = insertionBeforeMethod;
                 insertAfter = false;
             } else {
-                this.insertionMethod = insertionAfterMethod;
+                insertionMethod = insertionAfterMethod;
                 insertAfter = true;
             }
             bodyToInsert = insertableMethod.getBody();

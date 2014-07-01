@@ -103,7 +103,7 @@ public class AfterBurnerTest {
         afterBurner.addOrInsertMethod(insertableMethod);
 
         // THEN
-        //fail
+        fail();
     }
 
     @Test
@@ -121,6 +121,26 @@ public class AfterBurnerTest {
         targetClass = target.toClass();
         targetInstance = targetClass.newInstance();
         assertHasFooFieldWithValue(target, 2);
+    }
+
+    @Test(expected=AfterBurnerImpossibleException.class)
+    public void testInsertConstructor_with_no_constructor() throws Exception {
+        // GIVEN
+        target.addConstructor(CtNewConstructor.make("public Target() {}", target));
+        target.addField(new CtField(CtClass.intType, "foo", target));
+        InsertableConstructor insertableConstructor = new SimpleInsertableConstructor(target,
+                "foo = 2;") {
+            @Override
+            public boolean acceptParameters(CtClass[] paramClasses) throws AfterBurnerImpossibleException {
+                return false;
+            };
+        };
+
+        // WHEN
+        afterBurner.insertConstructor(insertableConstructor);
+
+        // THEN
+        fail();
     }
 
     @Test
