@@ -71,6 +71,7 @@ public class AfterBurnerTest {
         assertHasFooFieldWithValue(target, 2);
     }
 
+    @Test
     public void testInsertMethod_before() throws Exception {
         // GIVEN
         target.addMethod(CtNewMethod.make("public void bar() { }", target));
