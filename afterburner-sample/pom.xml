@@ -1,11 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.stephanenicolas.afterburner</groupId>
 	<artifactId>afterburner-sample</artifactId>
 	<name>Afterburner Sample</name>
 	<description>A sample.</description>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 
 	<properties>
 		<java.version>1.6</java.version>
@@ -19,7 +18,7 @@
 		<maven-deploy-plugin.version>2.7</maven-deploy-plugin.version>
 
 		<!-- DEPENDENCIES -->
-		<afterburner-library.version>1.0.0-SNAPSHOT</afterburner-library.version>
+		<afterburner-library.version>1.0.0</afterburner-library.version>
 	</properties>
 
 	<dependencies>
@@ -27,7 +26,7 @@
 		<dependency>
 			<groupId>de.icongmbh.oss.maven.plugins</groupId>
 			<artifactId>javassist-maven-plugin</artifactId>
-			<version>${javassist-maven-plugin.version}</version>
+			<version>1.1.0</version>
 		</dependency>
 	</dependencies>
 
@@ -45,7 +44,7 @@
 			<plugin>
 				<groupId>de.icongmbh.oss.maven.plugins</groupId>
 				<artifactId>javassist-maven-plugin</artifactId>
-				<version>${javassist-maven-plugin.version}</version>
+				<version>1.1.0</version>
 				<configuration>
 					<includeTestClasses>false</includeTestClasses>
 					<transformerClasses>

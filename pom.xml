@@ -1,9 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.stephanenicolas.afterburner</groupId>
 	<artifactId>afterburner-parent</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>afterburner Parent</name>
 	<packaging>pom</packaging>
 	<description>afterburnering is, indeed, kind of way to bypass java single inheritance paradigm. It allows to copy all declared fields, constructors and methods in a given class into another class.</description>
@@ -25,7 +24,7 @@
 		<connection>scm:git:ssh://git@github.com/stephanenicolas/afterburner.git</connection>
 		<url>git:ssh://git@github.com/stephanenicolas/afterburner.git</url>
 		<developerConnection>scm:git:ssh://git@github.com/stephanenicolas/afterburner.git</developerConnection>
-		<tag>HEAD</tag>
+		<tag>afterburner-parent-1.0.0</tag>
 	</scm>
 
 	<licenses>
@@ -168,7 +167,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<ignore />
 									</action>
 								</pluginExecution>
 								<pluginExecution>
