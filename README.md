@@ -1,4 +1,4 @@
-AfterBurner
+AfterBurner <img src='https://raw.githubusercontent.com/stephanenicolas/afterburner/master/assets/afterburner_logo.jpg' alt='mimic logo' width='150px'/> 
 ===========
 
 [![Coverage Status](https://img.shields.io/coveralls/stephanenicolas/afterburner.svg)](https://coveralls.io/r/stephanenicolas/afterburner?branch=master)
@@ -133,5 +133,8 @@ builder
 
 If you want to combine an annotation with byte code insertion of your favorite library, to avoid boiler plate, use AfterBurner.
 
+### Credits
+
+The AfterBurner logo is a courtesy of [Hitoshi Mitani](https://plus.google.com/u/0/photos/100459550951624585332/albums/5677808844706283617/5677808842260954306?pid=5677808842260954306&oid=100459550951624585332).
 
 
