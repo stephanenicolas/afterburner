@@ -1,4 +1,4 @@
-AfterBurner <img src='https://raw.githubusercontent.com/stephanenicolas/afterburner/master/assets/afterburner_logo.jpg' alt='mimic logo' width='150px'/> 
+AfterBurner <img src='https://raw.githubusercontent.com/stephanenicolas/afterburner/master/assets/afterburner_logo.jpg' alt='afterburner logo' width='150px'/> 
 ===========
 
 [![Coverage Status](https://img.shields.io/coveralls/stephanenicolas/afterburner.svg)](https://coveralls.io/r/stephanenicolas/afterburner?branch=master)
