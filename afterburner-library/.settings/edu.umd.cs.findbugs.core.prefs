@@ -1,0 +1,7 @@
+#FindBugs User Preferences
+#Sun Jul 06 09:32:41 CEST 2014
+detector_threshold=2
+effort=default
+filter_settings=Default|BAD_PRACTICE,CORRECTNESS,EXPERIMENTAL,I18N,MALICIOUS_CODE,MT_CORRECTNESS,PERFORMANCE,SECURITY,STYLE|false|15
+filter_settings_neg=NOISE|
+run_at_full_build=true

@@ -35,64 +35,17 @@ public class InsertableMethodBuilder {
         this.signatureExtractor = signatureExtractor;
     }
 
-    public InsertableMethodBuilder insertIntoClass(Class<?> clazzToInsertInto) throws NotFoundException {
+    public StateTargetClassSet insertIntoClass(Class<?> clazzToInsertInto) throws NotFoundException {
         this.classToInsertInto = ClassPool.getDefault().get(clazzToInsertInto.getName());
-        return this;
+        return new StateTargetClassSet();
     }
 
-    public InsertableMethodBuilder insertIntoClass(CtClass classToInsertInto) {
+    public StateTargetClassSet insertIntoClass(CtClass classToInsertInto) {
         this.classToInsertInto = classToInsertInto;
-        return this;
+        return new StateTargetClassSet();
     }
 
-    public InsertableMethodBuilder inMethodIfExists(String targetMethod) {
-        this.targetMethod = targetMethod;
-        return this;
-    }
-
-    public InsertableMethodBuilder beforeACallTo(String insertionBeforeMethod) {
-        this.insertionBeforeMethod = insertionBeforeMethod;
-        return this;
-    }
-
-    public InsertableMethodBuilder afterACallTo(String insertionAfterMethod) {
-        this.insertionAfterMethod = insertionAfterMethod;
-        return this;
-    }
-
-    public InsertableMethodBuilder withBody(String body) {
-        this.body = body;
-        return this;
-    }
-
-    public InsertableMethodBuilder elseCreateMethodIfNotExists(String fullMethod) {
-        this.fullMethod = fullMethod;
-        return this;
-    }
-
-    public InsertableMethodBuilder beforeOverrideMethod(String targetMethod) throws NotFoundException {
-        this.targetMethod = targetMethod;
-        this.insertionBeforeMethod = targetMethod;
-        CtMethod overridenMethod = classToInsertInto.getDeclaredMethod(targetMethod);
-        fullMethod = signatureExtractor.createJavaSignature(overridenMethod) + " { \n"
-                + InsertableMethod.BODY_TAG + "\n"
-                + signatureExtractor.invokeSuper(overridenMethod) + "}\n";
-        return this;
-    }
-
-    public InsertableMethodBuilder afterOverrideMethod(String targetMethod) throws NotFoundException {
-        this.targetMethod = targetMethod;
-        this.insertionAfterMethod = targetMethod;
-        CtMethod overridenMethod = classToInsertInto.getDeclaredMethod(targetMethod);
-        fullMethod = signatureExtractor.createJavaSignature(overridenMethod) + " { \n"
-                + signatureExtractor.invokeSuper(overridenMethod) + "\n"
-                + InsertableMethod.BODY_TAG + "}\n";
-        return this;
-    }
-    
-    public void doIt() throws CannotCompileException,
-    AfterBurnerImpossibleException {
-
+    public void doIt() throws CannotCompileException, AfterBurnerImpossibleException {
         InsertableMethod method = createInsertableMethod();
         afterBurner.addOrInsertMethod(method);
     }
@@ -118,32 +71,115 @@ public class InsertableMethodBuilder {
         checkFields();
         doInsertBodyInFullMethod();
 
-        InsertableMethod method = new InsertableMethod(classToInsertInto) {
-            @Override
-            public String getFullMethod() {
-                return fullMethod;
-            }
-
-            @Override
-            public String getBody() {
-                return body;
-            }
-
-            @Override
-            public String getTargetMethodName() throws AfterBurnerImpossibleException {
-                return targetMethod;
-            }
-
-            @Override
-            public String getInsertionBeforeMethod() {
-                return insertionBeforeMethod;
-            }
-
-            @Override
-            public String getInsertionAfterMethod() {
-                return insertionAfterMethod;
-            }
-        };
+        InsertableMethod method = new SimpleInsertableMethod(classToInsertInto);
         return method;
     }
+
+    private final class SimpleInsertableMethod extends InsertableMethod {
+        private SimpleInsertableMethod(CtClass classToInsertInto) {
+            super(classToInsertInto);
+        }
+
+        @Override
+        public String getFullMethod() {
+            return fullMethod;
+        }
+
+        @Override
+        public String getBody() {
+            return body;
+        }
+
+        @Override
+        public String getTargetMethodName() throws AfterBurnerImpossibleException {
+            return targetMethod;
+        }
+
+        @Override
+        public String getInsertionBeforeMethod() {
+            return insertionBeforeMethod;
+        }
+
+        @Override
+        public String getInsertionAfterMethod() {
+            return insertionAfterMethod;
+        }
+    }
+
+    public class StateTargetClassSet {
+        public StateTargetMethodSet inMethodIfExists(String targetMethod) {
+            InsertableMethodBuilder.this.targetMethod = targetMethod;
+            return new StateTargetMethodSet();
+        }
+
+        public StateInsertionPointAndFullMethodSet beforeOverrideMethod(String targetMethod) throws NotFoundException {
+            InsertableMethodBuilder.this.targetMethod = targetMethod;
+            InsertableMethodBuilder.this.insertionBeforeMethod = targetMethod;
+            CtMethod overridenMethod = classToInsertInto.getDeclaredMethod(targetMethod);
+            fullMethod = signatureExtractor.createJavaSignature(overridenMethod) + " { \n"
+                    + InsertableMethod.BODY_TAG + "\n"
+                    + signatureExtractor.invokeSuper(overridenMethod) + "}\n";
+            return new StateInsertionPointAndFullMethodSet();
+        }
+
+        public StateInsertionPointAndFullMethodSet afterOverrideMethod(String targetMethod) throws NotFoundException {
+            InsertableMethodBuilder.this.targetMethod = targetMethod;
+            InsertableMethodBuilder.this.insertionAfterMethod = targetMethod;
+            CtMethod overridenMethod = classToInsertInto.getDeclaredMethod(targetMethod);
+            fullMethod = signatureExtractor.createJavaSignature(overridenMethod) + " { \n"
+                    + signatureExtractor.invokeSuper(overridenMethod) + "\n"
+                    + InsertableMethod.BODY_TAG + "}\n";
+            return new StateInsertionPointAndFullMethodSet();
+        }
+    }
+
+    public class StateTargetMethodSet {
+        public StateInsertionPointSet beforeACallTo(String insertionBeforeMethod) {
+            InsertableMethodBuilder.this.insertionBeforeMethod = insertionBeforeMethod;
+            return new StateInsertionPointSet();
+        }
+
+        public StateInsertionPointSet afterACallTo(String insertionAfterMethod) {
+            InsertableMethodBuilder.this.insertionAfterMethod = insertionAfterMethod;
+            return new StateInsertionPointSet();
+        }
+    }
+
+    public class StateInsertionPointSet {
+        public StateBodySet withBody(String body) {
+            InsertableMethodBuilder.this.body = body;
+            return new StateBodySet();
+        }
+    }
+    
+    public class StateInsertionPointAndFullMethodSet {
+        public StateComplete withBody(String body) {
+            InsertableMethodBuilder.this.body = body;
+            return new StateComplete();
+        }
+    }
+
+    public class StateBodySet {
+        public StateComplete elseCreateMethodIfNotExists(String fullMethod) {
+            InsertableMethodBuilder.this.fullMethod = fullMethod;
+            return new StateComplete();
+        }
+    }
+
+    public class StateComplete {
+        
+        public InsertableMethod createInsertableMethod() throws AfterBurnerImpossibleException {
+            checkFields();
+            doInsertBodyInFullMethod();
+
+            InsertableMethod method = new SimpleInsertableMethod(classToInsertInto);
+            return method;
+        }
+
+        public void doIt() throws CannotCompileException, AfterBurnerImpossibleException {
+            InsertableMethod method = createInsertableMethod();
+            afterBurner.addOrInsertMethod(method);
+        }
+    }
+
 }
