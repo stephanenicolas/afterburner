@@ -40,6 +40,10 @@ public class InsertableConstructorBuilder {
                     "Builder was not used as intended. A field is null.");
         }
     }
+    
+    //**********************************************
+    //******* FLUENT DSL STATE CLASSES
+    //**********************************************
 
     public class StateTargetClassSet {
         public StateComplete withBody(String body) {
@@ -47,7 +51,7 @@ public class InsertableConstructorBuilder {
             return new StateComplete();
         }
     }
-    
+
     public class StateComplete {
 
         public void doIt() throws CannotCompileException, AfterBurnerImpossibleException, NotFoundException {

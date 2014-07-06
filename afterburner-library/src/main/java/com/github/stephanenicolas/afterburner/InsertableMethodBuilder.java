@@ -64,6 +64,11 @@ public class InsertableMethodBuilder {
                     "Builder was not used as intended. A field is null.");
         }
     }
+    
+    //**********************************************
+    //******* FLUENT DSL STATE CLASSES
+    //**********************************************
+
 
     public class StateTargetClassSet {
         public StateTargetMethodSet inMethodIfExists(String targetMethod) {
@@ -71,14 +76,13 @@ public class InsertableMethodBuilder {
             return new StateTargetMethodSet();
         }
 
-        public StateInsertionPointAndFullMethodSet beforeOverrideMethod(
-                String targetMethod) throws NotFoundException {
+        public StateInsertionPointAndFullMethodSet beforeOverrideMethod(String targetMethod) throws NotFoundException {
             InsertableMethodBuilder.this.targetMethod = targetMethod;
             InsertableMethodBuilder.this.insertionBeforeMethod = targetMethod;
             CtMethod overridenMethod = findTargetMethod(targetMethod);
             if (overridenMethod == null) {
                 throw new NotFoundException(String.format("Class %s doesn't contain any method named %s", classToInsertInto.getName(), targetMethod));
-            } 
+            }
             fullMethod = signatureExtractor
                     .createJavaSignature(overridenMethod)
                     + " { \n"
@@ -88,8 +92,7 @@ public class InsertableMethodBuilder {
             return new StateInsertionPointAndFullMethodSet();
         }
 
-        public StateInsertionPointAndFullMethodSet afterOverrideMethod(
-                String targetMethod) throws NotFoundException {
+        public StateInsertionPointAndFullMethodSet afterOverrideMethod(String targetMethod) throws NotFoundException {
             InsertableMethodBuilder.this.targetMethod = targetMethod;
             InsertableMethodBuilder.this.insertionAfterMethod = targetMethod;
             CtMethod overridenMethod = findTargetMethod(targetMethod);
