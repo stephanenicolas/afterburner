@@ -39,8 +39,8 @@ public class InsertableConstructorBuilderTest {
         //WHEN
         builder
             .insertIntoClass(classToInsertInto)
-            .withBody(body);
-        builder.doIt();
+            .withBody(body)
+            .doIt();
 
         //THEN
         EasyMock.verify(afterBurnerMock);
@@ -51,12 +51,12 @@ public class InsertableConstructorBuilderTest {
         //GIVEN
         CtClass classToInsertInto = CtClass.intType;
         String body = "";
-        builder
-            .insertIntoClass(classToInsertInto)
-            .withBody(body);
 
         //WHEN
-        InsertableConstructor constructor = builder.createInsertableConstructor();
+        InsertableConstructor constructor = builder
+                .insertIntoClass(classToInsertInto)
+                .withBody(body)
+                .createInsertableConstructor();
 
         //THEN
         assertNotNull(constructor);
@@ -70,12 +70,13 @@ public class InsertableConstructorBuilderTest {
         //GIVEN
         String body = "";
         Class<?> classToInsertInto = String.class;
-        builder
-            .insertIntoClass(classToInsertInto )
-            .withBody(body);
+        ;
 
         //WHEN
-        InsertableConstructor constructor = builder.createInsertableConstructor();
+        InsertableConstructor constructor = builder
+                .insertIntoClass(classToInsertInto )
+                .withBody(body)
+                .createInsertableConstructor();
 
         //THEN
         assertNotNull(constructor);
@@ -84,17 +85,6 @@ public class InsertableConstructorBuilderTest {
         assertTrue(constructor.acceptParameters(null));
     }
 
-    @Test(expected = AfterBurnerImpossibleException.class)
-    public void testCheckAllFields_should_throw_exceptions_if_no_targetClass_defined() throws AfterBurnerImpossibleException {
-        //GIVEN
-        builder.withBody("");
-
-        //WHEN
-        builder.checkFields();
-
-        //THEN
-        fail("Should have thrown exception");
-    }
 
     @Test(expected = AfterBurnerImpossibleException.class)
     public void testCheckAllFields_should_throw_exceptions_if_no_body_defined() throws AfterBurnerImpossibleException {

@@ -1,6 +1,9 @@
 package com.github.stephanenicolas.afterburner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -21,6 +24,8 @@ import org.slf4j.Logger;
 import com.github.stephanenicolas.afterburner.exception.AfterBurnerImpossibleException;
 import com.github.stephanenicolas.afterburner.inserts.InsertableConstructor;
 import com.github.stephanenicolas.afterburner.inserts.InsertableMethod;
+import com.github.stephanenicolas.afterburner.inserts.SimpleInsertableConstructor;
+import com.github.stephanenicolas.afterburner.inserts.SimpleInsertableMethod;
 
 public class AfterBurnerTest {
 
@@ -40,8 +45,7 @@ public class AfterBurnerTest {
     @Test
     public void testAddMethod() throws Exception {
         // GIVEN
-        InsertableMethod insertableMethod = new SimpleInsertableMethod(target,
-                "foo", "public boolean foo() { return true; }", null, null, null);
+        InsertableMethod insertableMethod = new SimpleInsertableMethod(target, "foo", null, null, null, "public boolean foo() { return true; }");
 
         // WHEN
         afterBurner.addOrInsertMethod(insertableMethod);
@@ -58,8 +62,7 @@ public class AfterBurnerTest {
         target.addMethod(CtNewMethod.make("public void bar() { }", target));
         target.addMethod(CtNewMethod.make("public boolean foo() { bar(); return false; }", target));
         target.addField(new CtField(CtClass.intType, "foo", target));
-        InsertableMethod insertableMethod = new SimpleInsertableMethod(target,
-                "foo", null, "foo = 2;", null, "bar");
+        InsertableMethod insertableMethod = new SimpleInsertableMethod(target, "foo", null, "bar", "foo = 2;", null );
 
         // WHEN
         afterBurner.addOrInsertMethod(insertableMethod);
@@ -77,8 +80,7 @@ public class AfterBurnerTest {
         target.addMethod(CtNewMethod.make("public void bar() { }", target));
         target.addMethod(CtNewMethod.make("public boolean foo() { bar(); return false; }", target));
         target.addField(new CtField(CtClass.intType, "foo", target));
-        InsertableMethod insertableMethod = new SimpleInsertableMethod(target,
-                "foo", null, "foo = 2;", "bar", null);
+        InsertableMethod insertableMethod = new SimpleInsertableMethod(target, "foo", "bar", null, "foo = 2;", null);
 
         // WHEN
         afterBurner.addOrInsertMethod(insertableMethod);
@@ -96,8 +98,7 @@ public class AfterBurnerTest {
         target.addMethod(CtNewMethod.make("public void bar() { }", target));
         target.addMethod(CtNewMethod.make("public boolean foo() { bar(); return false; }", target));
         target.addField(new CtField(CtClass.intType, "foo", target));
-        InsertableMethod insertableMethod = new SimpleInsertableMethod(target,
-                "foo", null, "foo = 2;", null, null);
+        InsertableMethod insertableMethod = new SimpleInsertableMethod(target, "foo", null, null, "foo = 2;", null);
 
         // WHEN
         afterBurner.addOrInsertMethod(insertableMethod);
@@ -111,8 +112,7 @@ public class AfterBurnerTest {
         // GIVEN
         target.addConstructor(CtNewConstructor.make("public Target() {}", target));
         target.addField(new CtField(CtClass.intType, "foo", target));
-        InsertableConstructor insertableConstructor = new SimpleInsertableConstructor(target,
-                "foo = 2;");
+        InsertableConstructor insertableConstructor = new SimpleInsertableConstructor(target, "foo = 2;", true);
 
         // WHEN
         afterBurner.insertConstructor(insertableConstructor);
@@ -128,13 +128,7 @@ public class AfterBurnerTest {
         // GIVEN
         target.addConstructor(CtNewConstructor.make("public Target() {}", target));
         target.addField(new CtField(CtClass.intType, "foo", target));
-        InsertableConstructor insertableConstructor = new SimpleInsertableConstructor(target,
-                "foo = 2;") {
-            @Override
-            public boolean acceptParameters(CtClass[] paramClasses) throws AfterBurnerImpossibleException {
-                return false;
-            };
-        };
+        InsertableConstructor insertableConstructor = new SimpleInsertableConstructor(target, "foo = 2;", false);
 
         // WHEN
         afterBurner.insertConstructor(insertableConstructor);
@@ -209,68 +203,6 @@ public class AfterBurnerTest {
         Field realFooField = targetInstance.getClass().getDeclaredField("foo");
         realFooField.setAccessible(true);
         assertEquals(value, realFooField.get(targetInstance));
-    }
-
-    private final class SimpleInsertableMethod extends InsertableMethod {
-        private String targetMethodName;
-        private String fullMethod;
-        private String body;
-        private String insertionBeforeMethod;
-        private String insertionAfterMethod;
-
-        public SimpleInsertableMethod(CtClass classToInsertInto,
-                String targetMethodName, String fullMethod, String body, String insertionBeforeMethod, String insertionAfterMethod) {
-            super(classToInsertInto);
-            this.targetMethodName = targetMethodName;
-            this.fullMethod = fullMethod;
-            this.body = body;
-            this.insertionBeforeMethod = insertionBeforeMethod;
-            this.insertionAfterMethod = insertionAfterMethod;
-        }
-
-        @Override
-        public String getTargetMethodName() throws AfterBurnerImpossibleException {
-            return targetMethodName;
-        }
-
-        @Override
-        public String getFullMethod() throws AfterBurnerImpossibleException {
-            return fullMethod;
-        }
-
-        @Override
-        public String getBody() throws AfterBurnerImpossibleException {
-            return body;
-        }
-
-        @Override
-        public String getInsertionBeforeMethod() {
-            return insertionBeforeMethod;
-        }
-
-        @Override
-        public String getInsertionAfterMethod() {
-            return insertionAfterMethod;
-        }
-    }
-
-    public class SimpleInsertableConstructor extends InsertableConstructor {
-        private String body;
-
-        public SimpleInsertableConstructor(CtClass classToInsertInto, String body) {
-            super(classToInsertInto);
-            this.body = body;
-        }
-
-        @Override
-        public String getConstructorBody(CtClass[] paramClasses) throws AfterBurnerImpossibleException {
-            return body;
-        }
-
-        @Override
-        public boolean acceptParameters(CtClass[] paramClasses) throws AfterBurnerImpossibleException {
-            return true;
-        }
     }
 
 }

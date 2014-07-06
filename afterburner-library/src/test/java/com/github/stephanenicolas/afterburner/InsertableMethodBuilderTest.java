@@ -61,9 +61,8 @@ public class InsertableMethodBuilderTest {
             .inMethodIfExists(targetMethod)
             .afterACallTo(insertionAfterMethod)
             .withBody(body)
-            .elseCreateMethodIfNotExists(fullMethod);
-
-        builder.doIt();
+            .elseCreateMethodIfNotExists(fullMethod)
+            .doIt();
 
         //THEN
         EasyMock.verify(afterBurnerMock);
@@ -98,9 +97,8 @@ public class InsertableMethodBuilderTest {
         builder
             .insertIntoClass(classToInsertInto)
             .afterOverrideMethod(targetMethod)
-            .withBody(body);
-
-        builder.doIt();
+            .withBody(body)
+            .doIt();
 
         //THEN
         EasyMock.verify(afterBurnerMock);
@@ -135,12 +133,12 @@ public class InsertableMethodBuilderTest {
         CtClass classToInsertInto = targetClass;
         String targetMethod = "foo";
         String body = "";
-        builder
-            .insertIntoClass(classToInsertInto.toClass())
-            .beforeOverrideMethod(targetMethod)
-            .withBody(body);
 
-        builder.doIt();
+        builder
+        .insertIntoClass(classToInsertInto.toClass())
+        .beforeOverrideMethod(targetMethod)
+        .withBody(body)
+        .doIt();
 
         //THEN
         EasyMock.verify(afterBurnerMock);
@@ -155,15 +153,15 @@ public class InsertableMethodBuilderTest {
         String insertionAfterMethod = "";
         String fullMethod = "";
         String body = "";
-        builder
-            .insertIntoClass(classToInsertInto)
-            .inMethodIfExists(targetMethod)
-            .afterACallTo(insertionAfterMethod)
-            .withBody(body)
-            .elseCreateMethodIfNotExists(fullMethod);
 
         //WHEN
-        InsertableMethod method = builder.createInsertableMethod();
+        InsertableMethod method = builder
+                .insertIntoClass(classToInsertInto)
+                .inMethodIfExists(targetMethod)
+                .afterACallTo(insertionAfterMethod)
+                .withBody(body)
+                .elseCreateMethodIfNotExists(fullMethod)
+                .createInsertableMethod();
 
         //THEN
         assertNotNull(method);
@@ -183,15 +181,16 @@ public class InsertableMethodBuilderTest {
         String insertionBeforeMethod = "insertionBeforeMethod";
         String fullMethod = "fullMethod";
         String body = "body";
-        builder
-            .insertIntoClass(classToInsertInto)
-            .inMethodIfExists(targetMethod)
-            .beforeACallTo(insertionBeforeMethod)
-            .withBody(body)
-            .elseCreateMethodIfNotExists(fullMethod);
+        
 
         //WHEN
-        InsertableMethod method = builder.createInsertableMethod();
+        InsertableMethod method = builder
+                .insertIntoClass(classToInsertInto)
+                .inMethodIfExists(targetMethod)
+                .beforeACallTo(insertionBeforeMethod)
+                .withBody(body)
+                .elseCreateMethodIfNotExists(fullMethod)
+                .createInsertableMethod();
 
         //THEN
         assertNotNull(method);

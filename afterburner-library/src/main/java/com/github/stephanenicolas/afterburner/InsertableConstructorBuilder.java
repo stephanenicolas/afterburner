@@ -7,6 +7,7 @@ import javassist.NotFoundException;
 
 import com.github.stephanenicolas.afterburner.exception.AfterBurnerImpossibleException;
 import com.github.stephanenicolas.afterburner.inserts.InsertableConstructor;
+import com.github.stephanenicolas.afterburner.inserts.SimpleInsertableConstructor;
 
 /**
  * Almost a DSL/builder to ease creating an {@link InsertableConstructor}.
@@ -23,24 +24,14 @@ public class InsertableConstructorBuilder {
         this.afterBurner = afterBurner;
     }
 
-    public InsertableConstructorBuilder insertIntoClass(Class<?> clazzToInsertInto) throws NotFoundException {
+    public StateTargetClassSet insertIntoClass(Class<?> clazzToInsertInto) throws NotFoundException {
         this.classToInsertInto = ClassPool.getDefault().get(clazzToInsertInto.getName());
-        return this;
+        return new StateTargetClassSet();
     }
 
-    public InsertableConstructorBuilder insertIntoClass(CtClass clazzToInsertInto) {
+    public StateTargetClassSet insertIntoClass(CtClass clazzToInsertInto) {
         this.classToInsertInto = clazzToInsertInto;
-        return this;
-    }
-
-    public InsertableConstructorBuilder withBody(String body) {
-        this.body = body;
-        return this;
-    }
-
-    public void doIt() throws CannotCompileException, AfterBurnerImpossibleException, NotFoundException {
-        InsertableConstructor method = createInsertableConstructor();
-        afterBurner.insertConstructor(method);
+        return new StateTargetClassSet();
     }
 
     protected void checkFields() throws AfterBurnerImpossibleException {
@@ -50,22 +41,25 @@ public class InsertableConstructorBuilder {
         }
     }
 
-    public InsertableConstructor createInsertableConstructor() throws AfterBurnerImpossibleException {
-        checkFields();
-
-        InsertableConstructor constructor = new InsertableConstructor(classToInsertInto) {
-
-            @Override
-            public String getConstructorBody(CtClass[] paramClasses) throws AfterBurnerImpossibleException {
-                return body;
-            }
-
-            @Override
-            public boolean acceptParameters(CtClass[] paramClasses) throws AfterBurnerImpossibleException {
-                return true;
-            }
-        };
-        return constructor;
+    public class StateTargetClassSet {
+        public StateComplete withBody(String body) {
+            InsertableConstructorBuilder.this.body = body;
+            return new StateComplete();
+        }
     }
     
+    public class StateComplete {
+
+        public void doIt() throws CannotCompileException, AfterBurnerImpossibleException, NotFoundException {
+            InsertableConstructor method = createInsertableConstructor();
+            afterBurner.insertConstructor(method);
+        }
+
+        public InsertableConstructor createInsertableConstructor() throws AfterBurnerImpossibleException {
+            checkFields();
+
+            InsertableConstructor constructor = new SimpleInsertableConstructor(classToInsertInto, body, true);
+            return constructor;
+        }
+    }
 }
