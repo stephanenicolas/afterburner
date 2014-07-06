@@ -4,7 +4,7 @@
 	<artifactId>afterburner-sample</artifactId>
 	<name>Afterburner Sample</name>
 	<description>A sample.</description>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 
 	<properties>
 		<java.version>1.6</java.version>
@@ -18,7 +18,7 @@
 		<maven-deploy-plugin.version>2.7</maven-deploy-plugin.version>
 
 		<!-- DEPENDENCIES -->
-		<afterburner-library.version>1.0.0</afterburner-library.version>
+		<afterburner-library.version>1.0.1-SNAPSHOT</afterburner-library.version>
 	</properties>
 
 	<dependencies>
