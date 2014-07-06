@@ -56,6 +56,8 @@
 		<findbugs-maven-plugin.version>2.5.3</findbugs-maven-plugin.version>
 		<maven-jar-plugin.version>2.4</maven-jar-plugin.version>
 		<maven-source-plugin.version>2.2</maven-source-plugin.version>
+		<maven-release-plugin.version>2.5</maven-release-plugin.version>
+		<javassist-maven-plugin.version>1.1.0</javassist-maven-plugin.version>
 	</properties>
 
 	<build>
@@ -178,7 +180,7 @@
 											javassist-maven-plugin
 										</artifactId>
 										<versionRange>
-											[1.1.0-SNAPSHOT,)
+											[${javassist-maven-plugin.vesion},)
 										</versionRange>
 										<goals>
 											<goal>javassist</goal>
@@ -207,6 +209,17 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>${maven-release-plugin.version}</version>
+				<configuration>
+					<goals>deploy</goals>
+					<autoversionsubmodules>true</autoversionsubmodules>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
 
 	<repositories>
