@@ -75,8 +75,10 @@ public class InsertableMethodBuilder {
                 String targetMethod) throws NotFoundException {
             InsertableMethodBuilder.this.targetMethod = targetMethod;
             InsertableMethodBuilder.this.insertionBeforeMethod = targetMethod;
-            CtMethod overridenMethod = classToInsertInto
-                    .getDeclaredMethod(targetMethod);
+            CtMethod overridenMethod = findTargetMethod(targetMethod);
+            if (overridenMethod == null) {
+                throw new NotFoundException(String.format("Class %s doesn't contain any method named %s", classToInsertInto.getName(), targetMethod));
+            } 
             fullMethod = signatureExtractor
                     .createJavaSignature(overridenMethod)
                     + " { \n"
@@ -90,8 +92,10 @@ public class InsertableMethodBuilder {
                 String targetMethod) throws NotFoundException {
             InsertableMethodBuilder.this.targetMethod = targetMethod;
             InsertableMethodBuilder.this.insertionAfterMethod = targetMethod;
-            CtMethod overridenMethod = classToInsertInto
-                    .getDeclaredMethod(targetMethod);
+            CtMethod overridenMethod = findTargetMethod(targetMethod);
+            if (overridenMethod == null) {
+                throw new NotFoundException(String.format("Class %s doesn't contain any method named %s", classToInsertInto.getName(), targetMethod));
+            }
             fullMethod = signatureExtractor
                     .createJavaSignature(overridenMethod)
                     + " { \n"
@@ -99,6 +103,21 @@ public class InsertableMethodBuilder {
                     + "\n"
                     + InsertableMethod.BODY_TAG + "}\n";
             return new StateInsertionPointAndFullMethodSet();
+        }
+
+        private CtMethod findTargetMethod(String targetMethod) {
+            CtMethod overridenMethod = null;
+            try {
+                overridenMethod = classToInsertInto
+                        .getDeclaredMethod(targetMethod);
+            } catch (Exception e) {
+                for (CtMethod method : classToInsertInto.getMethods()) {
+                    if (method.getName().equals(targetMethod)) {
+                        overridenMethod = method;
+                    }
+                }
+            }
+            return overridenMethod;
         }
     }
 
