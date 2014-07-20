@@ -1,0 +1,10 @@
+apply plugin: 'java'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile 'com.darylteo.gradle:javassist-plugin:0.2.1'
+	compile 'com.github.stephanenicolas.afterburner:afterburner-library:1.0.0'
+}
