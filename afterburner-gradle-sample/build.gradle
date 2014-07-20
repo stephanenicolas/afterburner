@@ -26,11 +26,10 @@ task transform1(type: TransformationTask) {
 
 	def afterBurner = new AfterBurner(logger); // this uses Gradle's logger
 
-  where { c ->
-		c.methods.find { method -> 
-			method.name == 'doStuff' || method.name == 'doOtherStuff'
-		} != null
+  where { c -> c.name.endsWith('Example')
   }.transform { c ->
+		logger.debug("Transforming "+c.getName());
+
 		afterBurner.afterOverrideMethod(c, "doStuff", "System.out.println(\"Inside doStuff\");");
 
 		def builder = new InsertableMethodBuilder(afterBurner);
@@ -42,6 +41,7 @@ task transform1(type: TransformationTask) {
 			.elseCreateMethodIfNotExists("public void doOtherStuff() { ___BODY___ }")
 			.doIt();
   }
+  
 }
 
 // transformation with transformer implementation
@@ -51,3 +51,26 @@ task transform2(type: TransformationTask) {
 
   transformation = new com.github.stephanenicolas.afterburner.sample.ExampleProcessor()
 }
+
+task copyTransformed1(type: Copy) {
+    println "${buildDir}/transforms/transform1"
+    from ("${buildDir}/transforms/transform1")
+    into sourceSets.main.output
+}
+
+task copyTransformed2(type: Copy) {
+    from ("${buildDir}/transforms/transform2")
+    into sourceSets.main.output
+}
+
+copyTransformed1.mustRunAfter transform1
+copyTransformed2.mustRunAfter transform2
+
+tasks.withType(Copy) {
+    eachFile { println it.file }
+}
+
+tasks.withType(TransformationTask) {
+    println source
+}
+
