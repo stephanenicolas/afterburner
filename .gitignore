@@ -2,3 +2,9 @@
 .classpath
 .project
 target
+
+# gradle gitignore
+.*
+.gradle
+build
+bin
