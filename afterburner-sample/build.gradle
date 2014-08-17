@@ -1,0 +1,77 @@
+buildscript {
+  repositories {
+    mavenCentral()
+    mavenLocal()
+  }
+
+  dependencies {
+    // import this for the TransformationTask
+    classpath 'com.darylteo.gradle:javassist-plugin:0.2.1'
+
+    // you only need this if you're doing configuration based configuration
+    // or if you're creating the ClassTransformer in script rather than in buildSrc
+    classpath 'com.github.stephanenicolas.afterburner:afterburner-library:1.0.1-SNAPSHOT'
+  }
+}
+
+apply plugin: 'java'
+
+import com.github.stephanenicolas.afterburner.AfterBurner
+import com.github.stephanenicolas.afterburner.InsertableMethodBuilder
+import com.darylteo.gradle.javassist.tasks.TransformationTask
+
+// configuration based transformation
+task transform1(type: TransformationTask) {
+  from sourceSets.main.output
+  into("${buildDir}/transforms/transform1")
+
+  def afterBurner = new AfterBurner(logger); // this uses Gradle's logger
+
+  where { c -> c.name.endsWith('Example')
+  }.transform { c ->
+    logger.debug("Transforming "+c.getName());
+
+    afterBurner.afterOverrideMethod(c, "doStuff", "System.out.println(\"Inside doStuff\");");
+
+    def builder = new InsertableMethodBuilder(afterBurner);
+    builder
+        .insertIntoClass(c)
+        .inMethodIfExists("doOtherStuff")
+        .beforeACallTo("bar")
+        .withBody("System.out.println(\"Inside doOtherStuff\");")
+        .elseCreateMethodIfNotExists("public void doOtherStuff() { " + InsertableMethod.BODY_TAG + " }")
+        .doIt();
+  }
+
+}
+
+// transformation with transformer implementation
+task transform2(type: TransformationTask) {
+  from sourceSets.main.output
+  into("${buildDir}/transforms/transform2")
+
+  transformation = new com.github.stephanenicolas.afterburner.sample.ExampleProcessor()
+}
+
+task copyTransformed1(type: Copy) {
+  println "${buildDir}/transforms/transform1"
+  from ("${buildDir}/transforms/transform1")
+  into sourceSets.main.output
+}
+
+task copyTransformed2(type: Copy) {
+  from ("${buildDir}/transforms/transform2")
+  into sourceSets.main.output
+}
+
+copyTransformed1.mustRunAfter transform1
+copyTransformed2.mustRunAfter transform2
+
+tasks.withType(Copy) {
+  eachFile { println it.file }
+}
+
+tasks.withType(TransformationTask) {
+  println source
+}
+
