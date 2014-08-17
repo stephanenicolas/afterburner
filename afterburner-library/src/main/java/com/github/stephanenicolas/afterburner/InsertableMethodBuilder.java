@@ -5,6 +5,7 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
+import lombok.extern.java.Log;
 
 import com.github.stephanenicolas.afterburner.exception.AfterBurnerImpossibleException;
 import com.github.stephanenicolas.afterburner.inserts.CtMethodJavaWriter;
@@ -17,6 +18,7 @@ import com.github.stephanenicolas.afterburner.inserts.SimpleInsertableMethod;
  * 
  * @author SNI
  */
+@Log
 public class InsertableMethodBuilder {
 
     private String targetMethod;
@@ -51,6 +53,9 @@ public class InsertableMethodBuilder {
 
     private void doInsertBodyInFullMethod() {
         if (fullMethod != null) {
+            if (!fullMethod.contains(InsertableMethod.BODY_TAG)) {
+                log.fine("Full method doesn't contain body tag (InsertableMethod.BODY_TAG=" + InsertableMethod.BODY_TAG + ")");
+            }
             fullMethod = fullMethod.replace(InsertableMethod.BODY_TAG, body);
         }
     }

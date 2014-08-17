@@ -29,6 +29,7 @@ public class ExampleProcessor extends ClassTransformer {
 
 	@Override
 	protected void applyTransformations(CtClass classToTransform) throws Exception {
+		getLogger().debug("Transforming "+classToTransform.getName());
 		afterBurner.afterOverrideMethod(classToTransform, "doStuff", "System.out.println(\"Inside doStuff\");");
 
 		InsertableMethodBuilder builder = new InsertableMethodBuilder(afterBurner);
