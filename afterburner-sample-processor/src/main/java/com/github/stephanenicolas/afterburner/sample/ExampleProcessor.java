@@ -2,21 +2,24 @@ package com.github.stephanenicolas.afterburner.sample;
 
 import com.github.stephanenicolas.afterburner.AfterBurner;
 import com.github.stephanenicolas.afterburner.InsertableMethodBuilder;
+import com.github.stephanenicolas.afterburner.inserts.InsertableMethod;
 
 import javassist.CtClass;
 import javassist.CtMethod;
-import de.icongmbh.oss.maven.plugin.javassist.ClassTransformer;
+import javassist.build.IClassTransformer;
+import javassist.build.JavassistBuildException;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * A simple annotation processor.
  * @author SNI
  */
-public class ExampleProcessor extends ClassTransformer {
+@Slf4j
+public class ExampleProcessor implements IClassTransformer {
 
-	private AfterBurner afterBurner = new AfterBurner(getLogger());
+	private AfterBurner afterBurner = new AfterBurner();
 
-	@Override
-	protected boolean shouldTransform(CtClass candidateClass) throws Exception {
+	@Override public boolean shouldTransform(CtClass candidateClass) {
 		boolean hasDoStuff = false;
 		CtMethod[] methods = candidateClass.getMethods();
 		for( CtMethod method : methods) {
@@ -28,18 +31,22 @@ public class ExampleProcessor extends ClassTransformer {
 	}
 
 	@Override
-	protected void applyTransformations(CtClass classToTransform) throws Exception {
-		getLogger().debug("Transforming "+classToTransform.getName());
-		afterBurner.afterOverrideMethod(classToTransform, "doStuff", "System.out.println(\"Inside doStuff\");");
+	public void applyTransformations(CtClass classToTransform)  throws JavassistBuildException {
+		log.info("Transforming " + classToTransform.getName());
+    try {
+      afterBurner.afterOverrideMethod(classToTransform, "doStuff", "System.out.println(\"Inside doStuff\");");
 
-		InsertableMethodBuilder builder = new InsertableMethodBuilder(afterBurner);
-		builder
-			.insertIntoClass(classToTransform)
-			.inMethodIfExists("doOtherStuff")
-			.beforeACallTo("bar")
-			.withBody("System.out.println(\"Inside doOtherStuff\");")
-			.elseCreateMethodIfNotExists("public void doOtherStuff() { ___BODY___ }")
-			.doIt();
-	}
+      InsertableMethodBuilder builder = new InsertableMethodBuilder(afterBurner);
+      builder
+        .insertIntoClass(classToTransform)
+        .inMethodIfExists("doOtherStuff")
+        .beforeACallTo("bar")
+        .withBody("System.out.println(\"Inside doOtherStuff\");")
+        .elseCreateMethodIfNotExists("public void doOtherStuff() { " + InsertableMethod.BODY_TAG + " }")
+        .doIt();
+    } catch (Exception e) {
+      throw new JavassistBuildException(e);
+    }
+  }
 
 }

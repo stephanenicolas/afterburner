@@ -14,12 +14,13 @@
 		<eclipse-lifecycle-plugin.version>1.0.0</eclipse-lifecycle-plugin.version>
 		<jacoco-maven-plugin.version>0.7.1.201405082137</jacoco-maven-plugin.version>
 		<coveralls-maven-plugin.version>2.2.0</coveralls-maven-plugin.version>
-		<javassist-maven-plugin.version>1.1.0-SNAPSHOT</javassist-maven-plugin.version>
+		<javassist-maven-plugin.version>1.2.0-SNAPSHOT</javassist-maven-plugin.version>
 		<maven-deploy-plugin.version>2.7</maven-deploy-plugin.version>
 
 		<!-- DEPENDENCIES -->
 		<afterburner-library.version>1.0.1-SNAPSHOT</afterburner-library.version>
-	</properties>
+    <lombok.version>1.14.2</lombok.version>
+  </properties>
 
 	<dependencies>
 		<!-- DEPENDENCIES -->
@@ -29,10 +30,16 @@
 			<version>${afterburner-library.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>de.icongmbh.oss.maven.plugins</groupId>
-			<artifactId>javassist-maven-plugin</artifactId>
-			<version>1.1.0</version>
+			<groupId>com.github.stephanenicolas.javassist</groupId>
+			<artifactId>javassist-build-plugin-api</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>${lombok.version}</version>
+      <scope>provided</scope>
+    </dependency>
 	</dependencies>
 
 	<build>

@@ -1,0 +1,48 @@
+buildscript {
+  repositories {
+    mavenCentral()
+    mavenLocal()
+  }
+  dependencies {
+    // import this for the TransformationTask
+    classpath 'com.darylteo.gradle:javassist-plugin:0.2.2'
+
+    // you only need this if you're doing configuration based configuration
+    // or if you're creating the ClassTransformer in script rather than in buildSrc
+    classpath 'com.android.tools.build:gradle:0.12.+'
+    classpath 'com.github.stephanenicolas.afterburner:afterburner-android-sample-processor:1.0.1-SNAPSHOT'
+    classpath 'org.projectlombok:lombok:1.14.2'
+    classpath 'com.google.android:android:4.4.2_r2'
+  }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'com.github.stephanenicolas.afterburner'
+
+repositories {
+  mavenLocal()
+}
+dependencies {
+  compile files("/Users/administrateur/.m2/repository/com/github/stephanenicolas/afterburner/afterburner-android-sample-processor/1.0.1-SNAPSHOT/afterburner-android-sample-processor-1.0.1-SNAPSHOT.jar")
+}
+
+android {
+  compileSdkVersion 20
+  buildToolsVersion "20.0.0"
+
+  defaultConfig {
+    applicationId "com.github.stephanenicolas.afterburner.sample.android"
+    minSdkVersion 8
+    targetSdkVersion 20
+    versionCode 1
+    versionName "1.0"
+  }
+
+  buildTypes {
+    release {
+      runProguard false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+}
+

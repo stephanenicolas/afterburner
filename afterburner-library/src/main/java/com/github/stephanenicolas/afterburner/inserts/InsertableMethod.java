@@ -49,4 +49,31 @@ public abstract class InsertableMethod extends Insertable {
      * @throws AfterBurnerImpossibleException in case something goes wrong. Wrap all exceptions into it.
      */
     public abstract String getTargetMethodName() throws AfterBurnerImpossibleException;
+
+    public String toString() {
+        String fullMethod;
+        try {
+            fullMethod = getFullMethod();
+        } catch (AfterBurnerImpossibleException e) {
+            fullMethod = "<Exception>";
+        }
+        String body;
+        try {
+            body = getBody();
+        } catch (AfterBurnerImpossibleException e) {
+            body = "<Exception>";
+        }
+        final String string = "[class:"
+            + getClassToInsertInto().getName()
+            + ",before:"
+            + getInsertionBeforeMethod()
+            + ",after:"
+            + getInsertionAfterMethod()
+            + ",fullMethod:"
+            + fullMethod
+            + ",body:"
+            + body
+            + "]";
+        return string;
+    }
 }

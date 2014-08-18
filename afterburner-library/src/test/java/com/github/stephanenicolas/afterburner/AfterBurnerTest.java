@@ -19,7 +19,6 @@ import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
 
 import com.github.stephanenicolas.afterburner.exception.AfterBurnerImpossibleException;
 import com.github.stephanenicolas.afterburner.inserts.InsertableConstructor;
@@ -36,7 +35,7 @@ public class AfterBurnerTest {
 
     @Before
     public void setUp() {
-        afterBurner = new AfterBurner(EasyMock.createNiceMock(Logger.class));
+        afterBurner = new AfterBurner();
         target = ClassPool.getDefault().makeClass(
                 "Target" + TestCounter.testCounter);
         TestCounter.testCounter++;
@@ -141,7 +140,7 @@ public class AfterBurnerTest {
     public void testBeforeOverride() throws Exception {
         // GIVEN
         target.addMethod(CtNewMethod.make("public void foo() { }", target));
-        afterBurner = EasyMock.createMockBuilder(AfterBurner.class).withConstructor(EasyMock.createNiceMock(Logger.class)).addMockedMethod("addOrInsertMethod").createMock();
+        afterBurner = EasyMock.createMockBuilder(AfterBurner.class).withConstructor().addMockedMethod("addOrInsertMethod").createMock();
         Capture<InsertableMethod> captured = new Capture<InsertableMethod>();
         afterBurner.addOrInsertMethod(EasyMock.capture(captured));
         EasyMock.expectLastCall().once();
@@ -165,7 +164,7 @@ public class AfterBurnerTest {
     public void testAfterOverride() throws Exception {
         // GIVEN
         target.addMethod(CtNewMethod.make("public void foo() { }", target));
-        afterBurner = EasyMock.createMockBuilder(AfterBurner.class).withConstructor(EasyMock.createNiceMock(Logger.class)).addMockedMethod("addOrInsertMethod").createMock();
+        afterBurner = EasyMock.createMockBuilder(AfterBurner.class).withConstructor().addMockedMethod("addOrInsertMethod").createMock();
         Capture<InsertableMethod> captured = new Capture<InsertableMethod>();
         afterBurner.addOrInsertMethod(EasyMock.capture(captured));
         EasyMock.expectLastCall().once();

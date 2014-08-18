@@ -5,12 +5,12 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
-import lombok.extern.java.Log;
 
 import com.github.stephanenicolas.afterburner.exception.AfterBurnerImpossibleException;
 import com.github.stephanenicolas.afterburner.inserts.CtMethodJavaWriter;
 import com.github.stephanenicolas.afterburner.inserts.InsertableMethod;
 import com.github.stephanenicolas.afterburner.inserts.SimpleInsertableMethod;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Almost a DSL/builder to ease creating an {@link InsertableMethod}. Needs more
@@ -18,7 +18,7 @@ import com.github.stephanenicolas.afterburner.inserts.SimpleInsertableMethod;
  * 
  * @author SNI
  */
-@Log
+@Slf4j
 public class InsertableMethodBuilder {
 
     private String targetMethod;
@@ -54,7 +54,7 @@ public class InsertableMethodBuilder {
     private void doInsertBodyInFullMethod() {
         if (fullMethod != null) {
             if (!fullMethod.contains(InsertableMethod.BODY_TAG)) {
-                log.fine("Full method doesn't contain body tag (InsertableMethod.BODY_TAG=" + InsertableMethod.BODY_TAG + ")");
+                log.info("Full method doesn't contain body tag (InsertableMethod.BODY_TAG=" + InsertableMethod.BODY_TAG + ")");
             }
             fullMethod = fullMethod.replace(InsertableMethod.BODY_TAG, body);
         }
@@ -94,6 +94,7 @@ public class InsertableMethodBuilder {
                     + InsertableMethod.BODY_TAG
                     + "\n"
                     + signatureExtractor.invokeSuper(overridenMethod) + "}\n";
+            log.info("Creating override " + fullMethod);
             return new StateInsertionPointAndFullMethodSet();
         }
 
@@ -110,6 +111,7 @@ public class InsertableMethodBuilder {
                     + signatureExtractor.invokeSuper(overridenMethod)
                     + "\n"
                     + InsertableMethod.BODY_TAG + "}\n";
+            log.info("Creating override " + fullMethod);
             return new StateInsertionPointAndFullMethodSet();
         }
 

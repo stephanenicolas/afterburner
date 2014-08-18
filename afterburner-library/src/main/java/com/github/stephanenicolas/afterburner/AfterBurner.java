@@ -12,24 +12,22 @@ import javassist.NotFoundException;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 
-import org.slf4j.Logger;
-
 import com.github.stephanenicolas.afterburner.exception.AfterBurnerImpossibleException;
 import com.github.stephanenicolas.afterburner.inserts.InsertableConstructor;
 import com.github.stephanenicolas.afterburner.inserts.InsertableMethod;
 import com.github.stephanenicolas.afterburner.inserts.CtMethodJavaWriter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Allows to modify byte code of java classes via javassist.
  * This class allows a rich API to injeect byte code into methods or constructors of a given class.
  * @author SNI
  */
+@Slf4j
 public class AfterBurner {
-    private Logger logger;
     private CtMethodJavaWriter signatureExtractor;
 
-    public AfterBurner(Logger logger) {
-        this.logger = logger;
+    public AfterBurner() {
         signatureExtractor = new CtMethodJavaWriter();
     }
 
@@ -40,12 +38,13 @@ public class AfterBurner {
      * @throws AfterBurnerImpossibleException if something else goes wrong, wraps other exceptions.
      */
     public void addOrInsertMethod(InsertableMethod insertableMethod) throws CannotCompileException, AfterBurnerImpossibleException {
+        log.info("InsertableMethod : " + insertableMethod);
         // create or complete onViewCreated
         String targetMethodName = insertableMethod.getTargetMethodName();
         CtClass classToTransform = insertableMethod.getClassToInsertInto();
         CtMethod targetMethod = extractExistingMethod(classToTransform,
                 targetMethodName);
-        getLogger().debug("Method : " + targetMethod);
+        log.info("Method : " + targetMethod);
         if (targetMethod != null) {
             InsertableMethodInjectorEditor injectorEditor = new InsertableMethodInjectorEditor(
                     classToTransform, insertableMethod);
@@ -93,7 +92,7 @@ public class AfterBurner {
     NotFoundException {
         // create or complete onViewCreated
         List<CtConstructor> constructorList = extractExistingConstructors(insertableConstructor);
-        getLogger().debug("constructor : " + constructorList.toString());
+        log.info("constructor : " + constructorList.toString());
         if (!constructorList.isEmpty()) {
             for (CtConstructor constructor : constructorList) {
                 constructor
@@ -136,11 +135,7 @@ public class AfterBurner {
         return constructors;
     }
 
-    private Logger getLogger() {
-        return logger;
-    }
-
-    private final class InsertableMethodInjectorEditor extends ExprEditor {
+    private static final class InsertableMethodInjectorEditor extends ExprEditor {
         private final CtClass classToTransform;
         private final String insertionMethod;
         private final boolean insertAfter;
@@ -171,17 +166,16 @@ public class AfterBurner {
         public void edit(MethodCall m) throws CannotCompileException {
             if (m.getMethodName().equals(insertionMethod)) {
 
-                String origMethodCall = "$_ = $proceed($$);\n";
+                String origMethodCall = "$_ = $proceed($$);;\n";
                 if (insertAfter) {
                     origMethodCall = origMethodCall + bodyToInsert;
                 } else {
                     origMethodCall = bodyToInsert + origMethodCall;
                 }
 
+                log.info("Injected : " + origMethodCall);
+                log.info("Class " + classToTransform.getName() + " has been enhanced.");
                 m.replace(origMethodCall);
-                getLogger().debug("Injected : " + origMethodCall);
-                getLogger().info("Class {} has been enhanced.",
-                        classToTransform.getName());
             }
         }
     }

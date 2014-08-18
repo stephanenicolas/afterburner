@@ -19,14 +19,15 @@ apply plugin: 'java'
 
 import com.github.stephanenicolas.afterburner.AfterBurner
 import com.github.stephanenicolas.afterburner.InsertableMethodBuilder
+import com.github.stephanenicolas.afterburner.inserts.InsertableMethod
 import com.darylteo.gradle.javassist.tasks.TransformationTask
 
 // configuration based transformation
 task transform1(type: TransformationTask) {
   from sourceSets.main.output
-  into("${buildDir}/transforms/transform1")
+  into("${buildDir}/transformations/transform1")
 
-  def afterBurner = new AfterBurner(); 
+  def afterBurner = new AfterBurner();
 
   where { c -> c.name.endsWith('Example')
   }.transform { c ->
@@ -43,36 +44,58 @@ task transform1(type: TransformationTask) {
         .elseCreateMethodIfNotExists("public void doOtherStuff() { " + InsertableMethod.BODY_TAG + " }")
         .doIt();
   }
-
 }
 
 // transformation with transformer implementation
 task transform2(type: TransformationTask) {
   from sourceSets.main.output
-  into("${buildDir}/transforms/transform2")
+  into("${buildDir}/transformations/transform2")
 
   transformation = new com.github.stephanenicolas.afterburner.sample.ExampleProcessor()
 }
 
 task copyTransformed1(type: Copy) {
-  println "${buildDir}/transforms/transform1"
-  from ("${buildDir}/transforms/transform1")
-  into sourceSets.main.output
+  from ("${buildDir}/transformations/transform1")
+  into  ("${buildDir}/classes/main")
+  outputs.upToDateWhen {
+    false
+  }
 }
 
 task copyTransformed2(type: Copy) {
-  from ("${buildDir}/transforms/transform2")
-  into sourceSets.main.output
+  from ("${buildDir}/transformations/transform2")
+  into  ("${buildDir}/classes/main")
 }
 
 copyTransformed1.mustRunAfter transform1
 copyTransformed2.mustRunAfter transform2
 
 tasks.withType(Copy) {
-  eachFile { println it.file }
+  eachFile { println "Copied:" + it.path }
+  println sourceSets.main.output
 }
 
 tasks.withType(TransformationTask) {
   println source
 }
 
+task execute(type:JavaExec) {
+  main = "com.github.stephanenicolas.afterburner.sample.Main"
+  classpath = sourceSets.main.runtimeClasspath
+  inputs.file ("${buildDir}/classes/main")
+}
+
+task check1() {
+  outputs.upToDateWhen {
+    false
+  }
+}
+
+task check2() {
+  outputs.upToDateWhen {
+    false
+  }
+}
+
+check1.dependsOn clean, transform1, copyTransformed1, execute
+check2.dependsOn clean, transform2, copyTransformed2, execute
