@@ -6,7 +6,7 @@ import javassist.Modifier;
 import javassist.NotFoundException;
 
 /**
- * Deals with some aspect of code generation regarding a {@link #CtMethod};
+ * Deals with some aspect of code generation regarding a {@link CtMethod};
  * @author SNI
  */
 public class CtMethodJavaWriter {
@@ -26,14 +26,14 @@ public class CtMethodJavaWriter {
 
     /**
      * Invokes the super implemntation of a method like "super.foo(o)".
-     * @param overridenMethod the method to generate the super impl invocation of.
+     * @param method the method to generate the super impl invocation of.
      * @return the super implemntation of a method like "super.foo(o)".
      * @throws NotFoundException if a type is not found (like parameter types).
      */
     public String invokeSuper(CtMethod method) throws NotFoundException {
         return "super."
                 + method.getName() + "("
-                + extractParameters(method) + ")";
+                + extractParameters(method) + ");";
     }
 
     private String extractThrowClause(CtMethod overridenMethod) throws NotFoundException {

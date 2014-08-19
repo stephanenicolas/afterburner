@@ -94,7 +94,7 @@ public class CtMethodJavaWriterTest {
         String extractSignature = signatureExtractor.invokeSuper(fooMethod);
 
         //THEN
-        assertEquals("super.foo()", extractSignature);
+        assertEquals("super.foo();", extractSignature);
     }
 
     @Test
@@ -109,6 +109,6 @@ public class CtMethodJavaWriterTest {
         String extractSignature = signatureExtractor.invokeSuper(fooMethod);
 
         //THEN
-        assertEquals("super.foo(p0, p1)", extractSignature);
+        assertEquals("super.foo(p0, p1);", extractSignature);
     }
 }
