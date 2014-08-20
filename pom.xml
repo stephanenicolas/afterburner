@@ -18,7 +18,6 @@
 		<module>afterburner-library</module>
 		<module>afterburner-sample-processor</module>
 		<module>afterburner-sample</module>
-		<module>afterburner-android-sample-processor</module>
 	</modules>
 
 	<scm>
