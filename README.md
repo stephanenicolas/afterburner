@@ -131,6 +131,15 @@ builder
   .doIt();
 ```
 
+#### AfterBurner related tools for Android
+
+AfterBurner is a simple byte code weaving library. To create powerful byte code weaving gradle plugins based on AfterBurner, use : 
+* [morpheus](https://github.com/stephanenicolas/morpheus), byte code weaver support lib for android.
+
+A more detailed example, using a gradle build can be found at : 
+* [loglifecycle](https://github.com/stephanenicolas/loglifecycle), Logs all lifecycle methods of a given activity on Android.
+
+
 If you want to combine an annotation with byte code insertion of your favorite library, to avoid boiler plate, use AfterBurner.
 
 ### Credits
