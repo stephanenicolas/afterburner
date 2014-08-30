@@ -36,14 +36,7 @@ public class ExampleProcessor implements IClassTransformer {
     try {
       afterBurner.afterOverrideMethod(classToTransform, "doStuff", "System.out.println(\"Inside doStuff\");");
 
-      InsertableMethodBuilder builder = new InsertableMethodBuilder(afterBurner);
-      builder
-        .insertIntoClass(classToTransform)
-        .inMethodIfExists("doOtherStuff")
-        .beforeACallTo("bar")
-        .withBody("System.out.println(\"Inside doOtherStuff\");")
-        .elseCreateMethodIfNotExists("public void doOtherStuff() { " + InsertableMethod.BODY_TAG + " }")
-        .doIt();
+
     } catch (Exception e) {
       throw new JavassistBuildException(e);
     }

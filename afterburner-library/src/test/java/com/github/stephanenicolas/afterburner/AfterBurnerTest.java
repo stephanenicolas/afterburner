@@ -1,8 +1,10 @@
 package com.github.stephanenicolas.afterburner;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.lang.reflect.Field;
@@ -134,6 +136,34 @@ public class AfterBurnerTest {
 
         // THEN
         fail();
+    }
+
+    @Test
+    public void testCheckIfMethodIsInvoked_whenItIsInvoked() throws Exception {
+        // GIVEN
+        target.addMethod(CtNewMethod.make("public void bar() { }", target));
+        CtMethod withinMethod = CtNewMethod.make("public void foo() { bar(); }", target);
+        target.addMethod(withinMethod);
+
+        // WHEN
+        boolean isInvoked = afterBurner.checkIfMethodIsInvoked(withinMethod, "bar");
+
+        // THEN
+        assertTrue(isInvoked);
+    }
+
+    @Test
+    public void testCheckIfMethodIsInvoked_whenItIsNotInvoked() throws Exception {
+        // GIVEN
+        target.addMethod(CtNewMethod.make("public void bar() { }", target));
+        CtMethod withinMethod = CtNewMethod.make("public void foo() { }", target);
+        target.addMethod(withinMethod);
+
+        // WHEN
+        boolean isInvoked = afterBurner.checkIfMethodIsInvoked(withinMethod, "bar");
+
+        // THEN
+        assertFalse(isInvoked);
     }
 
     @Test

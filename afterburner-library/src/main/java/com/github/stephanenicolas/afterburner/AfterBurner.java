@@ -49,6 +49,9 @@ public class AfterBurner {
             InsertableMethodInjectorEditor injectorEditor = new InsertableMethodInjectorEditor(
                     classToTransform, insertableMethod);
             targetMethod.instrument(injectorEditor);
+            if (!injectorEditor.isSuccessful) {
+                throw new CannotCompileException("Transformation failed. Insertion method not found.: " + targetMethodName);
+            }
         } else {
             classToTransform.addMethod(CtNewMethod.make(
                     insertableMethod.getFullMethod(), classToTransform));
@@ -122,6 +125,11 @@ public class AfterBurner {
         }
     }
 
+    public boolean checkIfMethodIsInvoked(CtMethod withinMethod,
+        String invokedMethod) throws CannotCompileException {
+        return new DetectMethodCallEditor(withinMethod, invokedMethod).checkIfisCallingMethod();
+    }
+
     private List<CtConstructor> extractExistingConstructors(final InsertableConstructor insertableConstructor) throws NotFoundException, AfterBurnerImpossibleException {
         List<CtConstructor> constructors = new ArrayList<CtConstructor>();
         CtConstructor[] declaredConstructors = insertableConstructor
@@ -140,6 +148,7 @@ public class AfterBurner {
         private final String insertionMethod;
         private final boolean insertAfter;
         private final String bodyToInsert;
+        private boolean isSuccessful;
 
         private InsertableMethodInjectorEditor(CtClass classToTransform, InsertableMethod insertableMethod) throws AfterBurnerImpossibleException {
             this.classToTransform = classToTransform;
@@ -176,7 +185,32 @@ public class AfterBurner {
                 log.info("Injected : " + origMethodCall);
                 log.info("Class " + classToTransform.getName() + " has been enhanced.");
                 m.replace(origMethodCall);
+                isSuccessful = true;
             }
+        }
+    }
+
+    private static final class DetectMethodCallEditor extends ExprEditor {
+
+        private CtMethod withinMethod;
+        private String methodName;
+        private boolean isCallingMethod;
+
+        private DetectMethodCallEditor(CtMethod withinMethod, String methodName) {
+            this.withinMethod = withinMethod;
+            this.methodName = methodName;
+        }
+
+        @Override
+        public void edit(MethodCall m) throws CannotCompileException {
+            if (m.getMethodName().equals(methodName)) {
+                this.isCallingMethod = true;
+            }
+        }
+
+        public boolean checkIfisCallingMethod() throws CannotCompileException {
+            withinMethod.instrument(this);
+            return isCallingMethod;
         }
     }
 }
