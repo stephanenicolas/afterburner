@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.stephanenicolas.afterburner</groupId>
 	<artifactId>afterburner-parent</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.2</version>
 	<name>afterburner Parent</name>
 	<packaging>pom</packaging>
 	<description>afterburnering is, indeed, kind of way to bypass java single inheritance paradigm. It allows to copy all declared fields, constructors and methods in a given class into another class.</description>
@@ -22,7 +22,7 @@
 		<connection>scm:git:ssh://git@github.com/stephanenicolas/afterburner.git</connection>
 		<url>git:ssh://git@github.com/stephanenicolas/afterburner.git</url>
 		<developerConnection>scm:git:ssh://git@github.com/stephanenicolas/afterburner.git</developerConnection>
-		<tag>HEAD</tag>
+		<tag>afterburner-parent-1.0.2</tag>
 	</scm>
 
 	<licenses>
